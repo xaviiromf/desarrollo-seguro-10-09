@@ -1,0 +1,91 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PastelMarket - Listas de Supermercado{% endblock %}</title>
+    {% tailwind_css %}
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="flex flex-col min-h-full font-sans text-slate-800 antialiased selection:bg-emerald-500 selection:text-white">
+    <!-- Navbar Tailwind -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Marca / Logo -->
+                <div class="flex items-center">
+                    <a href="{% url 'shopping:list_index' %}" class="flex items-center gap-2.5 text-lg font-bold text-slate-900 tracking-tight hover:opacity-90 transition">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 text-xl shadow-xs">
+                            🛒
+                        </span>
+                        <span>PastelMarket</span>
+                    </a>
+                </div>
+
+                <!-- Navegación y Usuario -->
+                <div class="flex items-center gap-3 sm:gap-4">
+                    {% if user.is_authenticated %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                            {{ user.username }}
+                        </span>
+
+                        <a href="{% url 'shopping:list_create' %}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs hover:shadow transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Nueva Lista
+                        </a>
+
+                        {% if user.is_staff or user.is_superuser %}
+                            <a href="{% url 'admin:index' %}" class="hidden sm:inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
+                                Admin
+                            </a>
+                        {% endif %}
+
+                        <form action="{% url 'logout' %}" method="post" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+                                Salir
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition">
+                            Iniciar Sesión
+                        </a>
+                        <a href="{% url 'register' %}" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition">
+                            Registrarse
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notificaciones / Mensajes Flash -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4">
+        {% if messages %}
+            <div class="space-y-2">
+                {% for message in messages %}
+                    <div class="p-4 rounded-xl text-sm font-medium border shadow-xs flex items-center justify-between {% if message.tags == 'success' %}bg-emerald-50 text-emerald-900 border-emerald-200{% elif message.tags == 'error' %}bg-rose-50 text-rose-900 border-rose-200{% elif message.tags == 'warning' %}bg-amber-50 text-amber-900 border-amber-200{% else %}bg-sky-50 text-sky-900 border-sky-200{% endif %}">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Contenido Principal -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-6">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+        <p>PastelMarket &bull; Supermercado con Django CBV, Tailwind CSS y Crispy Forms</p>
+    </footer>
+
+    <script src="{% static 'shopping/js/calculator.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
