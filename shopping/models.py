@@ -1,4 +1,3 @@
-from decimal import Decimal
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -7,6 +6,19 @@ class Priority(models.IntegerChoices):
     HIGH = 1, 'Alta'
     MEDIUM = 2, 'Media'
     LOW = 3, 'Baja'
+
+
+class Category(models.TextChoices):
+    DAIRY = 'LACTEOS', '🥛 Lácteos y Huevos'
+    FRUITS_VEGGIES = 'VERDURAS', '🍎 Frutas y Verduras'
+    MEAT = 'CARNES', '🥩 Carnes y Pescados'
+    BAKERY = 'PANADERIA', '🍞 Panadería y Pastelería'
+    PANTRY = 'DESPENSA', '🌾 Abarrotes y Despensa'
+    BEVERAGES = 'BEBIDAS', '🧃 Bebidas y Jugos'
+    CLEANING = 'LIMPIEZA', '🧼 Limpieza y Aseo'
+    FROZEN = 'CONGELADOS', '🧊 Congelados'
+    SNACKS = 'SNACKS', '🍫 Snacks y Golosinas'
+    OTHER = 'OTRO', '📦 Otro'
 
 
 class ShoppingList(models.Model):
@@ -22,6 +34,11 @@ class ShoppingList(models.Model):
         choices=Priority.choices,
         default=Priority.MEDIUM,
         verbose_name='Prioridad'
+    )
+    budget_limit = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name='Presupuesto Máximo (CLP $)'
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de creación')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Última actualización')
@@ -67,6 +84,51 @@ class ShoppingList(models.Model):
         return self.items_without_price_count > 0
 
     @property
+    def purchased_items_count(self) -> int:
+        """Cantidad de productos ya marcados como comprados."""
+        return self.items.filter(is_purchased=True).count()
+
+    @property
+    def purchased_total_amount(self) -> int:
+        """Total gastado en productos ya comprados."""
+        return sum(item.total_price for item in self.items.filter(is_purchased=True))
+
+    @property
+    def pending_total_amount(self) -> int:
+        """Total restante por gastar en productos pendientes."""
+        return sum(item.total_price for item in self.items.filter(is_purchased=False))
+
+    @property
+    def completion_percentage(self) -> int:
+        """Porcentaje de productos comprados respecto al total."""
+        total = self.items_count
+        if total == 0:
+            return 0
+        return int((self.purchased_items_count / total) * 100)
+
+    @property
+    def budget_percentage(self) -> int | None:
+        """Porcentaje del presupuesto consumido."""
+        if not self.budget_limit or self.budget_limit == 0:
+            return None
+        return int(round((self.total_amount / self.budget_limit) * 100))
+
+
+    @property
+    def is_over_budget(self) -> bool:
+        """Retorna True si el total estimado supera el presupuesto máximo asignado."""
+        if not self.budget_limit:
+            return False
+        return self.total_amount > self.budget_limit
+
+    @property
+    def remaining_budget(self) -> int | None:
+        """Monto restante del presupuesto (puede ser negativo si hay exceso)."""
+        if not self.budget_limit:
+            return None
+        return self.budget_limit - self.total_amount
+
+    @property
     def priority_badge_class(self) -> str:
         badge_classes = {
             Priority.HIGH: 'badge-priority-high',
@@ -85,6 +147,12 @@ class ShoppingItem(models.Model):
     )
     name = models.CharField(max_length=200, verbose_name='Producto')
     brand = models.CharField(max_length=150, blank=True, verbose_name='Marca')
+    category = models.CharField(
+        max_length=20,
+        choices=Category.choices,
+        default=Category.PANTRY,
+        verbose_name='Categoría'
+    )
     quantity = models.PositiveIntegerField(default=1, verbose_name='Cantidad')
     unit_price = models.PositiveIntegerField(
         default=0,

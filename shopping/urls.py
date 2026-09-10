@@ -5,6 +5,8 @@ from .views import (
     ShoppingListCreateView,
     ShoppingListUpdateView,
     ShoppingListDeleteView,
+    ShoppingListDuplicateView,
+    ShoppingListBulkToggleView,
     ShoppingItemCreateView,
     ShoppingItemUpdateView,
     ShoppingItemDeleteView,
@@ -20,6 +22,9 @@ urlpatterns = [
     path('lists/<int:pk>/', ShoppingListDetailView.as_view(), name='list_detail'),
     path('lists/<int:pk>/edit/', ShoppingListUpdateView.as_view(), name='list_update'),
     path('lists/<int:pk>/delete/', ShoppingListDeleteView.as_view(), name='list_delete'),
+    path('lists/<int:pk>/duplicate/', ShoppingListDuplicateView.as_view(), name='list_duplicate'),
+    path('lists/<int:pk>/bulk-toggle/', ShoppingListBulkToggleView.as_view(), name='list_bulk_toggle'),
+
 
     # Vistas de Ítems / Productos
     path('lists/<int:list_pk>/items/add/', ShoppingItemCreateView.as_view(), name='item_create'),

@@ -175,3 +175,82 @@ class ShoppingModelAndCalculationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         item.refresh_from_db()
         self.assertTrue(item.is_purchased)
+
+    def test_budget_limit_and_overbudget_calculations(self):
+        """Verifica cálculos de presupuesto máximo y alerta de exceso."""
+        self.list1.budget_limit = 10000
+        self.list1.save()
+
+        # Agregar ítem dentro del presupuesto
+        item1 = ShoppingItem.objects.create(
+            shopping_list=self.list1,
+            name='Carne Molida',
+            quantity=1,
+            unit_price=6000
+        )
+        self.assertEqual(self.list1.budget_percentage, 60)
+        self.assertFalse(self.list1.is_over_budget)
+        self.assertEqual(self.list1.remaining_budget, 4000)
+
+        # Agregar ítem que sobrepasa el presupuesto
+        item2 = ShoppingItem.objects.create(
+            shopping_list=self.list1,
+            name='Aceite de Oliva',
+            quantity=1,
+            unit_price=5500
+        )
+        # Total: 11.500 > 10.000 (115%)
+        self.assertEqual(self.list1.total_amount, 11500)
+        self.assertEqual(self.list1.budget_percentage, 115)
+        self.assertTrue(self.list1.is_over_budget)
+        self.assertEqual(self.list1.remaining_budget, -1500)
+
+    def test_duplicate_shopping_list(self):
+        """Prueba la duplicación completa de una lista con ítems reiniciados a pendientes."""
+        ShoppingItem.objects.create(
+            shopping_list=self.list1,
+            name='Arroz',
+            quantity=2,
+            unit_price=1200,
+            is_purchased=True
+        )
+        client = Client()
+        client.login(username='user1', password='password123')
+
+        url = reverse('shopping:list_duplicate', kwargs={'pk': self.list1.pk})
+        response = client.post(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Verificar que se creó la nueva lista
+        duplicated = ShoppingList.objects.get(name=f"Copia de {self.list1.name}")
+        self.assertEqual(duplicated.user, self.user1)
+        self.assertEqual(duplicated.items.count(), self.list1.items.count())
+        # Los ítems de la copia deben estar en is_purchased=False
+        for it in duplicated.items.all():
+            self.assertFalse(it.is_purchased)
+
+    def test_bulk_toggle_items(self):
+        """Prueba las acciones masivas de marcar y desmarcar todos los productos."""
+        i1 = ShoppingItem.objects.create(shopping_list=self.list1, name='A', quantity=1, unit_price=100, is_purchased=False)
+        i2 = ShoppingItem.objects.create(shopping_list=self.list1, name='B', quantity=1, unit_price=200, is_purchased=False)
+
+        client = Client()
+        client.login(username='user1', password='password123')
+
+        # Marcar todos
+        url = reverse('shopping:list_bulk_toggle', kwargs={'pk': self.list1.pk})
+        response = client.post(url, {'action': 'check_all'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        i1.refresh_from_db()
+        i2.refresh_from_db()
+        self.assertTrue(i1.is_purchased)
+        self.assertTrue(i2.is_purchased)
+
+        # Desmarcar todos
+        response2 = client.post(url, {'action': 'uncheck_all'}, follow=True)
+        self.assertEqual(response2.status_code, 200)
+        i1.refresh_from_db()
+        i2.refresh_from_db()
+        self.assertFalse(i1.is_purchased)
+        self.assertFalse(i2.is_purchased)
+

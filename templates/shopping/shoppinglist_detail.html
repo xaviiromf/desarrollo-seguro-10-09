@@ -4,188 +4,289 @@
 {% block title %}{{ shopping_list.name }} - Detalle de Lista{% endblock %}
 
 {% block content %}
-<!-- Barra superior de navegación y acciones -->
-<div class="flex items-center justify-between mb-6">
-    <a href="{% url 'shopping:list_index' %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition">
+<!-- Barra superior de navegación y acciones rápidas -->
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <a href="{% url 'shopping:list_index' %}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition shadow-2xs">
         &larr; Volver a mis listas
     </a>
 
-    <div class="flex items-center gap-2">
-        <a href="{% url 'shopping:list_update' shopping_list.pk %}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition">
-            ✏️ Editar Lista
+    <div class="flex flex-wrap items-center gap-2">
+        <!-- Copiar para WhatsApp -->
+        <button type="button" id="btn-copy-whatsapp" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 transition">
+            💬 Copiar para WhatsApp
+        </button>
+
+        <!-- Duplicar lista -->
+        <form action="{% url 'shopping:list_duplicate' shopping_list.pk %}" method="post" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition shadow-2xs" title="Crear una copia limpia de esta lista">
+                📋 Duplicar
+            </button>
+        </form>
+
+        <a href="{% url 'shopping:list_update' shopping_list.pk %}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition shadow-2xs">
+            ✏️ Editar
         </a>
-        <a href="{% url 'shopping:list_delete' shopping_list.pk %}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-700 bg-white border border-rose-200 hover:bg-rose-50 transition">
-            🗑️ Eliminar Lista
+
+        <a href="{% url 'shopping:list_delete' shopping_list.pk %}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-700 bg-white border border-rose-200 hover:bg-rose-50 transition shadow-2xs">
+            🗑️ Eliminar
         </a>
     </div>
 </div>
 
-<!-- Encabezado Destacado con Total General -->
-<section class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-    <div>
-        <div class="flex items-center gap-2 mb-2">
-            {% if shopping_list.priority == 1 %}
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-                    🔴 Prioridad Alta
-                </span>
-            {% elif shopping_list.priority == 2 %}
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                    🟡 Prioridad Media
-                </span>
-            {% else %}
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    🟢 Prioridad Baja
-                </span>
-            {% endif %}
+<!-- Encabezado Destacado con Métricas de Presupuesto y Totales -->
+<section class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs mb-8">
+    <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+        <div class="flex-1">
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+                {% if shopping_list.priority == 1 %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                        🔴 Prioridad Alta
+                    </span>
+                {% elif shopping_list.priority == 2 %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                        🟡 Prioridad Media
+                    </span>
+                {% else %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        🟢 Prioridad Baja
+                    </span>
+                {% endif %}
 
-            <span class="text-xs text-slate-400">
-                Creada el {{ shopping_list.created_at|date:"d/m/Y H:i" }}
-            </span>
+                <span class="text-xs text-slate-400">
+                    Creada el {{ shopping_list.created_at|date:"d/m/Y H:i" }}
+                </span>
+            </div>
+
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-1.5">
+                {{ shopping_list.name }}
+            </h1>
+            <p class="text-sm text-slate-500 max-w-2xl">
+                {{ shopping_list.description|default:"Sin notas adicionales." }}
+            </p>
+
+            {% if shopping_list.has_items_without_price %}
+                <div class="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-800">
+                    <span>⚠️</span>
+                    <span>Hay <strong>{{ shopping_list.items_without_price_count }}</strong> producto(s) sin precio definido. El total acumulado solo suma los ítems valorizados.</span>
+                </div>
+            {% endif %}
         </div>
 
-        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight mb-1">
-            {{ shopping_list.name }}
-        </h1>
-        <p class="text-sm text-slate-500">
-            {{ shopping_list.description|default:"Sin notas adicionales." }}
-        </p>
+        <!-- Caja de Total Acumulado y Presupuesto -->
+        <div class="bg-emerald-50/70 border-2 border-emerald-200 rounded-2xl p-5 text-right min-w-[240px]">
+            <p class="text-xs font-bold uppercase tracking-wider text-emerald-800">Total Lista de Compras</p>
+            <h2 id="grand-list-total" class="text-3xl font-extrabold text-emerald-900 my-0.5">
+                {{ shopping_list.total_amount|clp }}
+            </h2>
+            <p class="text-xs text-emerald-700 font-medium">
+                {{ shopping_list.items_count }} producto(s) &bull; {{ shopping_list.total_units }} unidad(es)
+            </p>
 
-        {% if shopping_list.has_items_without_price %}
-            <div class="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-800">
-                <span>⚠️</span>
-                <span>Hay <strong>{{ shopping_list.items_without_price_count }}</strong> producto(s) sin precio definido. El total acumulado solo suma los ítems valorizados.</span>
+            {% if shopping_list.budget_limit %}
+                <div class="mt-3 pt-3 border-t border-emerald-200/60 text-left text-xs">
+                    <div class="flex justify-between font-semibold text-slate-700 mb-1">
+                        <span>Presupuesto:</span>
+                        <span>{{ shopping_list.budget_limit|clp }}</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden mb-1">
+                        <div class="{% if shopping_list.is_over_budget %}bg-rose-500{% elif shopping_list.budget_percentage > 80 %}bg-amber-500{% else %}bg-emerald-600{% endif %} h-1.5 rounded-full" style="width: {% if shopping_list.budget_percentage > 100 %}100{% else %}{{ shopping_list.budget_percentage }}{% endif %}%;"></div>
+                    </div>
+                    {% if shopping_list.is_over_budget %}
+                        <p class="text-[11px] text-rose-600 font-bold text-right">⚠️ Excede en {{ shopping_list.remaining_budget|stringformat:"+d"|slice:"1:"|clp }}</p>
+                    {% else %}
+                        <p class="text-[11px] text-emerald-700 text-right">Quedan {{ shopping_list.remaining_budget|clp }} disponibles</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Barra de Progreso de Compra -->
+    {% if shopping_list.items_count > 0 %}
+        <div class="mt-6 pt-5 border-t border-slate-100">
+            <div class="flex flex-wrap items-center justify-between text-xs text-slate-600 mb-2 gap-2">
+                <div>
+                    <span>Progreso de compra en el supermercado: </span>
+                    <strong class="text-slate-900">{{ shopping_list.purchased_items_count }} de {{ shopping_list.items_count }} productos ({{ shopping_list.completion_percentage }}%)</strong>
+                </div>
+                <div>
+                    <span>Gastado: <strong class="text-emerald-700">{{ shopping_list.purchased_total_amount|clp }}</strong></span>
+                    <span class="mx-1.5 text-slate-300">|</span>
+                    <span>Pendiente: <strong class="text-slate-700">{{ shopping_list.pending_total_amount|clp }}</strong></span>
+                </div>
             </div>
-        {% endif %}
-    </div>
-
-    <!-- Caja de Total Acumulado -->
-    <div class="bg-emerald-50/70 border-2 border-emerald-200 rounded-2xl p-5 text-right min-w-[220px]">
-        <p class="text-xs font-bold uppercase tracking-wider text-emerald-800">Total Lista de Compras</p>
-        <h2 id="grand-list-total" class="text-3xl font-extrabold text-emerald-900 my-0.5">
-            {{ shopping_list.total_amount|clp }}
-        </h2>
-        <p class="text-xs text-emerald-700 font-medium">
-            {{ shopping_list.items_count }} producto(s) &bull; {{ shopping_list.total_units }} unidad(es)
-        </p>
-    </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                <div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" style="width: {{ shopping_list.completion_percentage }}%;"></div>
+            </div>
+        </div>
+    {% endif %}
 </section>
 
-<!-- Contenido: Tabla de Productos a la Izquierda y Formulario a la Derecha -->
+<!-- Contenido Principal: Tabla a la Izquierda y Formulario a la Derecha -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
     <!-- Tabla de Productos (2 Columnas) -->
-    <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-            <h3 class="text-base font-bold text-slate-900">
-                Productos en la lista ({{ items|length }})
-            </h3>
-            <span class="text-xs text-slate-500">
-                Marca los productos al comprarlos 🛒
-            </span>
+    <div class="lg:col-span-2 space-y-4">
+        <!-- Barra de Filtros y Acciones Masivas -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+            <!-- Filtros de Estado -->
+            <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                <span class="font-semibold text-slate-500 mr-1">Filtrar:</span>
+                <a href="?{% if selected_category %}category={{ selected_category }}{% endif %}" class="px-2.5 py-1 rounded-lg font-medium {% if not filter_status %}bg-slate-900 text-white{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %} transition">
+                    Todos
+                </a>
+                <a href="?status=pending{% if selected_category %}&category={{ selected_category }}{% endif %}" class="px-2.5 py-1 rounded-lg font-medium {% if filter_status == 'pending' %}bg-slate-900 text-white{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %} transition">
+                    Pendientes
+                </a>
+                <a href="?status=purchased{% if selected_category %}&category={{ selected_category }}{% endif %}" class="px-2.5 py-1 rounded-lg font-medium {% if filter_status == 'purchased' %}bg-slate-900 text-white{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %} transition">
+                    Comprados
+                </a>
+                <a href="?status=noprice{% if selected_category %}&category={{ selected_category }}{% endif %}" class="px-2.5 py-1 rounded-lg font-medium {% if filter_status == 'noprice' %}bg-amber-600 text-white{% else %}bg-amber-50 text-amber-700 hover:bg-amber-100{% endif %} transition">
+                    Sin precio
+                </a>
+            </div>
+
+            <!-- Acciones Masivas -->
+            <div class="flex items-center gap-2">
+                <form action="{% url 'shopping:list_bulk_toggle' shopping_list.pk %}" method="post" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="check_all">
+                    <button type="submit" class="text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg transition" title="Marcar todos los productos como comprados">
+                        ✓ Marcar todos
+                    </button>
+                </form>
+                <form action="{% url 'shopping:list_bulk_toggle' shopping_list.pk %}" method="post" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="uncheck_all">
+                    <button type="submit" class="text-xs font-semibold text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg transition" title="Marcar todos como pendientes">
+                        ✕ Desmarcar todos
+                    </button>
+                </form>
+            </div>
         </div>
 
-        {% if items %}
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50/80 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-                            <th class="py-3 px-4 text-center w-14">Listo</th>
-                            <th class="py-3 px-4">Producto</th>
-                            <th class="py-3 px-4">Marca</th>
-                            <th class="py-3 px-4 text-center">Cant.</th>
-                            <th class="py-3 px-4 text-right">Precio/u</th>
-                            <th class="py-3 px-4 text-right">Subtotal</th>
-                            <th class="py-3 px-4 text-center w-24">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 text-sm">
-                        {% for item in items %}
-                            <tr class="hover:bg-slate-50/50 transition {% if item.is_purchased %}bg-slate-50/70 text-slate-400{% endif %}" id="item-row-{{ item.id }}">
-                                <td class="py-3.5 px-4 text-center">
-                                    <form action="{% url 'shopping:item_toggle' item.id %}" method="post" class="inline">
-                                        {% csrf_token %}
-                                        <input 
-                                            type="checkbox" 
-                                            class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer js-toggle-purchased" 
-                                            {% if item.is_purchased %}checked{% endif %}
-                                            title="Marcar como comprado"
-                                        >
-                                    </form>
-                                </td>
-                                <td class="py-3.5 px-4 font-semibold text-slate-900 item-name-cell">
-                                    {% if item.is_purchased %}
-                                        <s>{{ item.name }}</s>
-                                    {% else %}
-                                        {{ item.name }}
-                                    {% endif %}
-                                </td>
-                                <td class="py-3.5 px-4">
-                                    {% if item.brand %}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
-                                            {{ item.brand }}
-                                        </span>
-                                    {% else %}
-                                        <span class="text-slate-300">-</span>
-                                    {% endif %}
-                                </td>
-                                <td class="py-3.5 px-4 text-center font-bold text-slate-700">
-                                    {{ item.quantity }}
-                                </td>
-                                <td class="py-3.5 px-4 text-right text-slate-500">
-                                    {% if item.is_price_unknown %}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">
-                                            Sin precio
-                                        </span>
-                                    {% else %}
-                                        {{ item.unit_price|clp }}
-                                    {% endif %}
-                                </td>
-                                <td class="py-3.5 px-4 text-right font-bold text-emerald-700">
-                                    {% if item.is_price_unknown %}
-                                        <span class="text-xs text-slate-400 italic">Por definir</span>
-                                    {% else %}
-                                        {{ item.total_price|clp }}
-                                    {% endif %}
-                                </td>
-                                <td class="py-3.5 px-4 text-center">
-                                    <div class="flex items-center justify-center gap-1">
-                                        <a href="{% url 'shopping:item_update' item.id %}" class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Editar producto">
-                                            ✏️
-                                        </a>
-                                        <form action="{% url 'shopping:item_delete' item.id %}" method="post" class="inline" onsubmit="return confirm('¿Eliminar {{ item.name }}?');">
-                                            {% csrf_token %}
-                                            <button type="submit" class="p-1 rounded text-rose-400 hover:text-rose-700 hover:bg-rose-50 transition" title="Eliminar">
-                                                🗑️
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
+        <!-- Filtro por Categorías (Scroll horizontal de badges) -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+            <a href="?{% if filter_status %}status={{ filter_status }}{% endif %}" class="whitespace-nowrap px-3 py-1.5 rounded-xl font-medium border {% if not selected_category %}bg-emerald-600 text-white border-emerald-600{% else %}bg-white text-slate-600 border-slate-200 hover:bg-slate-50{% endif %} transition shadow-2xs">
+                Todas las categorías
+            </a>
+            {% for cat_key, cat_label in categories %}
+                <a href="?category={{ cat_key }}{% if filter_status %}&status={{ filter_status }}{% endif %}" class="whitespace-nowrap px-3 py-1.5 rounded-xl font-medium border {% if selected_category == cat_key %}bg-emerald-600 text-white border-emerald-600{% else %}bg-white text-slate-600 border-slate-200 hover:bg-slate-50{% endif %} transition shadow-2xs">
+                    {{ cat_label }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Tabla de Productos -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            {% if items %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" id="products-table">
+                        <thead>
+                            <tr class="bg-slate-50/80 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                                <th class="py-3 px-3.5 text-center w-12">Listo</th>
+                                <th class="py-3 px-3.5">Producto</th>
+                                <th class="py-3 px-3.5">Categoría</th>
+                                <th class="py-3 px-3.5">Marca</th>
+                                <th class="py-3 px-3.5 text-center">Cant.</th>
+                                <th class="py-3 px-3.5 text-right">Precio/u</th>
+                                <th class="py-3 px-3.5 text-right">Subtotal</th>
+                                <th class="py-3 px-3.5 text-center w-20">Acciones</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr class="bg-slate-50 font-bold border-t-2 border-slate-200 text-sm">
-                            <td colspan="3" class="py-3.5 px-4 text-right text-slate-600">
-                                TOTALES ACUMULADOS:
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-slate-900">
-                                {{ shopping_list.total_units }} un.
-                            </td>
-                            <td class="py-3.5 px-4 text-right text-slate-400">-</td>
-                            <td class="py-3.5 px-4 text-right text-emerald-800 text-base">
-                                {{ shopping_list.total_amount|clp }}
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        {% else %}
-            <div class="p-12 text-center text-slate-500">
-                <span class="inline-block text-3xl mb-2">🥑</span>
-                <p class="font-semibold text-slate-800">Esta lista no tiene productos todavía</p>
-                <p class="text-xs text-slate-400 mt-1">Usa el formulario a la derecha para agregar tu primer producto.</p>
-            </div>
-        {% endif %}
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm">
+                            {% for item in items %}
+                                <tr class="hover:bg-slate-50/50 transition {% if item.is_purchased %}bg-slate-50/70 text-slate-400{% endif %}" id="item-row-{{ item.id }}">
+                                    <td class="py-3 px-3.5 text-center">
+                                        <form action="{% url 'shopping:item_toggle' item.id %}" method="post" class="inline">
+                                            {% csrf_token %}
+                                            <input 
+                                                type="checkbox" 
+                                                class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer js-toggle-purchased" 
+                                                {% if item.is_purchased %}checked{% endif %}
+                                                title="Marcar como comprado"
+                                            >
+                                        </form>
+                                    </td>
+                                    <td class="py-3 px-3.5 font-semibold text-slate-900 item-name-cell">
+                                        {% if item.is_purchased %}
+                                            <s>{{ item.name }}</s>
+                                        {% else %}
+                                            {{ item.name }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-3.5 text-xs text-slate-500 whitespace-nowrap">
+                                        {{ item.get_category_display }}
+                                    </td>
+                                    <td class="py-3 px-3.5">
+                                        {% if item.brand %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                                                {{ item.brand }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-slate-300">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-3.5 text-center font-bold text-slate-700">
+                                        {{ item.quantity }}
+                                    </td>
+                                    <td class="py-3 px-3.5 text-right text-slate-500 whitespace-nowrap">
+                                        {% if item.is_price_unknown %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">
+                                                Sin precio
+                                            </span>
+                                        {% else %}
+                                            {{ item.unit_price|clp }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-3.5 text-right font-bold text-emerald-700 whitespace-nowrap">
+                                        {% if item.is_price_unknown %}
+                                            <span class="text-xs text-slate-400 italic font-normal">Por definir</span>
+                                        {% else %}
+                                            {{ item.total_price|clp }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-3.5 text-center">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <a href="{% url 'shopping:item_update' item.id %}" class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Editar producto">
+                                                ✏️
+                                            </a>
+                                            <form action="{% url 'shopping:item_delete' item.id %}" method="post" class="inline" onsubmit="return confirm('¿Eliminar {{ item.name }}?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="p-1 rounded text-rose-400 hover:text-rose-700 hover:bg-rose-50 transition" title="Eliminar">
+                                                    🗑️
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-slate-50 font-bold border-t-2 border-slate-200 text-sm">
+                                <td colspan="4" class="py-3.5 px-3.5 text-right text-slate-600">
+                                    TOTALES ACUMULADOS:
+                                </td>
+                                <td class="py-3.5 px-3.5 text-center text-slate-900">
+                                    {{ shopping_list.total_units }} un.
+                                </td>
+                                <td class="py-3.5 px-3.5 text-right text-slate-400">-</td>
+                                <td class="py-3.5 px-3.5 text-right text-emerald-800 text-base whitespace-nowrap">
+                                    {{ shopping_list.total_amount|clp }}
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-12 text-center text-slate-500">
+                    <span class="inline-block text-3xl mb-2">🥑</span>
+                    <p class="font-semibold text-slate-800">No hay productos con los filtros seleccionados</p>
+                    <p class="text-xs text-slate-400 mt-1">Usa el formulario a la derecha para agregar productos o limpia los filtros.</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Formulario para Agregar Producto con Crispy Forms (1 Columna) -->
@@ -194,7 +295,7 @@
             <span>➕</span> Agregar Producto
         </h3>
         <p class="text-xs text-slate-500 mb-5">
-            Ingresa los detalles para calcular el total de inmediato.
+            Ingresa categoría, producto, cantidad y precio unitario (o márcalo como sin precio).
         </p>
 
         <form action="{% url 'shopping:item_create' shopping_list.pk %}" method="post" class="space-y-4">
@@ -204,7 +305,7 @@
             <!-- Banner de Cálculo Dinámico en Vivo -->
             <div class="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between text-xs text-emerald-900">
                 <span>Subtotal estimado:</span>
-                <strong id="live-item-subtotal" class="text-base font-extrabold text-emerald-800">$0.00</strong>
+                <strong id="live-item-subtotal" class="text-base font-extrabold text-emerald-800">$0</strong>
             </div>
 
             <button type="submit" class="w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition">
@@ -213,4 +314,60 @@
         </form>
     </aside>
 </div>
+
+<!-- Notificación Flotante Toast -->
+<div id="toast-notification" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-50">
+    Texto copiado al portapapeles
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Generar y Copiar texto para WhatsApp
+    const btnWhatsapp = document.getElementById('btn-copy-whatsapp');
+    const toast = document.getElementById('toast-notification');
+
+    function showToast(message) {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.remove('opacity-0', 'pointer-events-none');
+        toast.classList.add('opacity-100');
+        setTimeout(() => {
+            toast.classList.remove('opacity-100');
+            toast.classList.add('opacity-0', 'pointer-events-none');
+        }, 2500);
+    }
+
+    if (btnWhatsapp) {
+        btnWhatsapp.addEventListener('click', () => {
+            let text = "🛒 *LISTA DE SUPERMERCADO: {{ shopping_list.name }}*\n";
+            text += "Prioridad: {{ shopping_list.get_priority_display }}\n";
+            {% if shopping_list.budget_limit %}
+            text += "Tope de Presupuesto: {{ shopping_list.budget_limit|clp }}\n";
+            {% endif %}
+            text += "------------------------------\n";
+
+            {% for item in shopping_list.items.all %}
+                text += "{% if item.is_purchased %}✅{% else %}⬜{% endif %} {{ item.name }}{% if item.brand %} ({{ item.brand }}){% endif %} x{{ item.quantity }}";
+                {% if item.is_price_unknown %}
+                    text += " - [Sin precio]\n";
+                {% else %}
+                    text += " - {{ item.total_price|clp }}\n";
+                {% endif %}
+            {% endfor %}
+
+            text += "------------------------------\n";
+            text += "💰 *Total Estimado: {{ shopping_list.total_amount|clp }} CLP*\n";
+            text += "Total Productos: {{ shopping_list.items_count }} ({{ shopping_list.total_units }} unidades)\n";
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("¡Lista copiada al portapapeles para WhatsApp! 📋");
+            }).catch(() => {
+                showToast("No se pudo copiar automáticamente");
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

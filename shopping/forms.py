@@ -7,10 +7,17 @@ from .models import ShoppingList, ShoppingItem
 class ShoppingListForm(forms.ModelForm):
     class Meta:
         model = ShoppingList
-        fields = ['name', 'priority', 'description']
+        fields = ['name', 'priority', 'budget_limit', 'description']
+        labels = {
+            'name': 'Nombre de la Lista',
+            'priority': 'Prioridad',
+            'budget_limit': 'Presupuesto Máximo (CLP $, opcional)',
+            'description': 'Descripción o notas (opcional)',
+        }
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Nombre de la lista'}),
-            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Descripción o notas opcionales'}),
+            'name': forms.TextInput(attrs={'placeholder': 'Ej. Compras del Mes, Verdulería...'}),
+            'budget_limit': forms.NumberInput(attrs={'min': 0, 'step': 1000, 'placeholder': 'Ej. 50000'}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Notas adicionales, supermercado de preferencia...'}),
         }
 
 
@@ -24,10 +31,11 @@ class ShoppingItemForm(forms.ModelForm):
 
     class Meta:
         model = ShoppingItem
-        fields = ['name', 'brand', 'quantity', 'unit_price', 'has_unknown_price']
+        fields = ['name', 'brand', 'category', 'quantity', 'unit_price', 'has_unknown_price']
         labels = {
             'name': 'Producto',
             'brand': 'Marca (opcional)',
+            'category': 'Categoría',
             'quantity': 'Cantidad',
             'unit_price': 'Precio por unidad (CLP $)',
         }
@@ -38,16 +46,25 @@ class ShoppingItemForm(forms.ModelForm):
             'unit_price': forms.NumberInput(attrs={'min': 0, 'step': 1, 'id': 'id_unit_price', 'placeholder': 'Ej. 1350'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'category' in self.fields:
+            self.fields['category'].required = False
+
     def clean(self):
+        from .models import Category
         cleaned_data = super().clean()
         has_unknown_price = cleaned_data.get('has_unknown_price')
         unit_price = cleaned_data.get('unit_price')
+        if not cleaned_data.get('category'):
+            cleaned_data['category'] = Category.PANTRY
         if has_unknown_price:
             cleaned_data['unit_price'] = 0
         elif unit_price is None:
             cleaned_data['unit_price'] = 0
             cleaned_data['has_unknown_price'] = True
         return cleaned_data
+
 
 
 

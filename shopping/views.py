@@ -14,7 +14,7 @@ from django.views.generic import (
     DeleteView,
 )
 
-from .models import ShoppingList, ShoppingItem, Priority
+from .models import ShoppingList, ShoppingItem, Priority, Category
 from .forms import (
     ShoppingListForm,
     ShoppingItemForm,
@@ -127,7 +127,7 @@ class ShoppingListDetailView(LoginRequiredMixin, DetailView):
     """
     Vista separada de 'Detalle de la Lista de Compras'.
     Muestra los productos de la lista específica, cálculos de subtotales por producto,
-    total general de la lista y formulario para agregar nuevos productos.
+    total general de la lista, métricas de presupuesto, filtros por categoría y formulario para agregar nuevos productos.
     """
     model = ShoppingList
     template_name = 'shopping/shoppinglist_detail.html'
@@ -138,12 +138,75 @@ class ShoppingListDetailView(LoginRequiredMixin, DetailView):
         return ShoppingList.objects.filter(user=self.request.user).prefetch_related('items')
 
     def get_context_data(self, **kwargs):
+        from django.db.models import Q
         context = super().get_context_data(**kwargs)
-        # Instanciar el formulario para agregar productos directamente en el detalle
-        context['item_form'] = ShoppingItemForm()
-        # Lista ordenada de ítems
-        context['items'] = self.object.items.all().order_by('is_purchased', '-created_at')
+        items = self.object.items.all()
+
+        # Filtro por categoría
+        selected_category = self.request.GET.get('category', '').strip()
+        if selected_category:
+            items = items.filter(category=selected_category)
+
+        # Filtro por estado
+        filter_status = self.request.GET.get('status', '').strip()
+        if filter_status == 'pending':
+            items = items.filter(is_purchased=False)
+        elif filter_status == 'purchased':
+            items = items.filter(is_purchased=True)
+        elif filter_status == 'noprice':
+            items = items.filter(
+                Q(has_unknown_price=True) | Q(unit_price__isnull=True) | Q(unit_price=0)
+            )
+
+        context.update({
+            'item_form': ShoppingItemForm(),
+            'items': items.order_by('is_purchased', 'category', '-created_at'),
+            'categories': Category.choices,
+            'selected_category': selected_category,
+            'filter_status': filter_status,
+        })
         return context
+
+
+class ShoppingListDuplicateView(LoginRequiredMixin, View):
+    """Duplica una lista de compras existente con todos sus productos desmarcados."""
+    def post(self, request, pk, *args, **kwargs):
+        original_list = get_object_or_404(ShoppingList, pk=pk, user=request.user)
+        new_list = ShoppingList.objects.create(
+            user=request.user,
+            name=f"Copia de {original_list.name}",
+            description=original_list.description,
+            priority=original_list.priority,
+            budget_limit=original_list.budget_limit,
+        )
+        for item in original_list.items.all():
+            ShoppingItem.objects.create(
+                shopping_list=new_list,
+                name=item.name,
+                brand=item.brand,
+                category=item.category,
+                quantity=item.quantity,
+                unit_price=item.unit_price,
+                has_unknown_price=item.has_unknown_price,
+                is_purchased=False,
+            )
+        messages.success(request, f"¡Lista duplicada exitosamente como '{new_list.name}'!")
+        return redirect('shopping:list_detail', pk=new_list.pk)
+
+
+class ShoppingListBulkToggleView(LoginRequiredMixin, View):
+    """Marca o desmarca todos los productos de una lista en una sola acción."""
+    def post(self, request, pk, *args, **kwargs):
+        shopping_list = get_object_or_404(ShoppingList, pk=pk, user=request.user)
+        action = request.POST.get('action')
+        if action == 'check_all':
+            shopping_list.items.update(is_purchased=True)
+            messages.success(request, "Todos los productos han sido marcados como comprados.")
+        elif action == 'uncheck_all':
+            shopping_list.items.update(is_purchased=False)
+            messages.info(request, "Todos los productos han sido marcados como pendientes.")
+        return redirect('shopping:list_detail', pk=shopping_list.pk)
+
 
 
 class ShoppingListCreateView(LoginRequiredMixin, CreateView):
