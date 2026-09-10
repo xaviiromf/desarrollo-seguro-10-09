@@ -208,6 +208,51 @@ class ShoppingListBulkToggleView(LoginRequiredMixin, View):
         return redirect('shopping:list_detail', pk=shopping_list.pk)
 
 
+class ShoppingListExportCSVView(LoginRequiredMixin, View):
+    """Exporta la lista de compras y sus productos a un archivo CSV estructurado."""
+    def get(self, request, pk, *args, **kwargs):
+        import csv
+        from django.http import HttpResponse
+        shopping_list = get_object_or_404(ShoppingList, pk=pk, user=request.user)
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        safe_name = "".join(c for c in shopping_list.name if c.isalnum() or c in (' ', '_')).rstrip()
+        filename = f"lista_{shopping_list.pk}_{safe_name.lower().replace(' ', '_')}.csv"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        # UTF-8 BOM para apertura directa en Excel
+        response.write('\ufeff'.encode('utf8'))
+        writer = csv.writer(response, delimiter=';')
+        writer.writerow(['Producto', 'Marca', 'Categoría', 'Cantidad', 'Precio Unitario (CLP)', 'Subtotal (CLP)', 'Comprado'])
+
+        for item in shopping_list.items.all().order_by('category', 'name'):
+            price_str = 'Sin precio' if item.is_price_unknown else str(item.unit_price)
+            subtotal_str = 'Sin precio' if item.is_price_unknown else str(item.total_price)
+            purchased_str = 'Sí' if item.is_purchased else 'No'
+            writer.writerow([
+                item.name,
+                item.brand or '-',
+                item.get_category_display(),
+                item.quantity,
+                price_str,
+                subtotal_str,
+                purchased_str
+            ])
+
+        writer.writerow([])
+        writer.writerow(['TOTAL LISTA:', '', '', shopping_list.total_units, '', shopping_list.total_amount, ''])
+        return response
+
+
+class ShoppingListClearPurchasedView(LoginRequiredMixin, View):
+    """Elimina todos los productos marcados como comprados en la lista."""
+    def post(self, request, pk, *args, **kwargs):
+        shopping_list = get_object_or_404(ShoppingList, pk=pk, user=request.user)
+        deleted_count, _ = shopping_list.items.filter(is_purchased=True).delete()
+        messages.success(request, f"Se eliminaron {deleted_count} producto(s) comprados de la lista.")
+        return redirect('shopping:list_detail', pk=shopping_list.pk)
+
+
+
 
 class ShoppingListCreateView(LoginRequiredMixin, CreateView):
     """Crea una nueva lista de compras para el usuario logueado."""

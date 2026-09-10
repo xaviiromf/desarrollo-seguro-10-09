@@ -7,6 +7,8 @@ from .views import (
     ShoppingListDeleteView,
     ShoppingListDuplicateView,
     ShoppingListBulkToggleView,
+    ShoppingListExportCSVView,
+    ShoppingListClearPurchasedView,
     ShoppingItemCreateView,
     ShoppingItemUpdateView,
     ShoppingItemDeleteView,
@@ -24,6 +26,9 @@ urlpatterns = [
     path('lists/<int:pk>/delete/', ShoppingListDeleteView.as_view(), name='list_delete'),
     path('lists/<int:pk>/duplicate/', ShoppingListDuplicateView.as_view(), name='list_duplicate'),
     path('lists/<int:pk>/bulk-toggle/', ShoppingListBulkToggleView.as_view(), name='list_bulk_toggle'),
+    path('lists/<int:pk>/export-csv/', ShoppingListExportCSVView.as_view(), name='list_export_csv'),
+    path('lists/<int:pk>/clear-purchased/', ShoppingListClearPurchasedView.as_view(), name='list_clear_purchased'),
+
 
 
     # Vistas de Ítems / Productos

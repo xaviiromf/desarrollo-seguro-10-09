@@ -254,3 +254,63 @@ class ShoppingModelAndCalculationTests(TestCase):
         self.assertFalse(i1.is_purchased)
         self.assertFalse(i2.is_purchased)
 
+    def test_export_csv(self):
+        """Verifica la exportación estructurada a formato CSV y el aislamiento por usuario."""
+        ShoppingItem.objects.create(
+            shopping_list=self.list1,
+            name='Fideos Spaguetti',
+            brand='Carozzi',
+            quantity=3,
+            unit_price=890,
+            is_purchased=True
+        )
+        ShoppingItem.objects.create(
+            shopping_list=self.list1,
+            name='Orégano',
+            quantity=1,
+            unit_price=0,
+            has_unknown_price=True,
+            is_purchased=False
+        )
+
+        client = Client()
+        client.login(username='user1', password='password123')
+
+        url = reverse('shopping:list_export_csv', kwargs={'pk': self.list1.pk})
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv; charset=utf-8')
+        self.assertIn('attachment; filename=', response['Content-Disposition'])
+
+        content = response.content.decode('utf-8')
+        self.assertIn('Fideos Spaguetti', content)
+        self.assertIn('Carozzi', content)
+        self.assertIn('Orégano', content)
+        self.assertIn('Sin precio', content)
+        self.assertIn('TOTAL LISTA:', content)
+
+        # Verificar que user2 no puede descargar CSV de user1
+        client2 = Client()
+        client2.login(username='user2', password='password123')
+        forbidden_resp = client2.get(url)
+        self.assertEqual(forbidden_resp.status_code, 404)
+
+    def test_clear_purchased_items(self):
+        """Verifica que solo se eliminen los productos marcados como comprados."""
+        p1 = ShoppingItem.objects.create(shopping_list=self.list1, name='Manzana', quantity=1, unit_price=500, is_purchased=True)
+        p2 = ShoppingItem.objects.create(shopping_list=self.list1, name='Naranja', quantity=1, unit_price=600, is_purchased=True)
+        pending = ShoppingItem.objects.create(shopping_list=self.list1, name='Leche', quantity=2, unit_price=1100, is_purchased=False)
+
+        client = Client()
+        client.login(username='user1', password='password123')
+
+        url = reverse('shopping:list_clear_purchased', kwargs={'pk': self.list1.pk})
+        response = client.post(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # p1 y p2 deben haber sido eliminados
+        self.assertFalse(ShoppingItem.objects.filter(pk=p1.pk).exists())
+        self.assertFalse(ShoppingItem.objects.filter(pk=p2.pk).exists())
+        # pending debe seguir existiendo
+        self.assertTrue(ShoppingItem.objects.filter(pk=pending.pk).exists())
+
