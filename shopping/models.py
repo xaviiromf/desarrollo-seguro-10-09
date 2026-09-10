@@ -35,10 +35,14 @@ class ShoppingList(models.Model):
         return f"{self.name} ({self.get_priority_display()})"
 
     @property
-    def total_amount(self) -> Decimal:
-        """Calcula el total acumulado de todos los productos en la lista."""
-        total = sum(item.total_price for item in self.items.all())
-        return Decimal(str(total)).quantize(Decimal('0.01'))
+    def total_amount(self) -> int:
+        """Calcula el total acumulado en Pesos Chilenos (CLP)."""
+        return sum(item.total_price for item in self.items.all())
+
+    @property
+    def formatted_total_amount(self) -> str:
+        """Formatea el total en Pesos Chilenos con separador de miles: $12.990."""
+        return f"${self.total_amount:,.0f}".replace(",", ".")
 
     @property
     def total_units(self) -> int:
@@ -51,8 +55,19 @@ class ShoppingList(models.Model):
         return self.items.count()
 
     @property
+    def items_without_price_count(self) -> int:
+        """Cuenta cuántos productos no tienen precio definido."""
+        return self.items.filter(
+            models.Q(has_unknown_price=True) | models.Q(unit_price__isnull=True) | models.Q(unit_price=0)
+        ).count()
+
+    @property
+    def has_items_without_price(self) -> bool:
+        """Indica si la lista contiene productos sin precio."""
+        return self.items_without_price_count > 0
+
+    @property
     def priority_badge_class(self) -> str:
-        """Clase CSS correspondiente para el estilo pastel."""
         badge_classes = {
             Priority.HIGH: 'badge-priority-high',
             Priority.MEDIUM: 'badge-priority-medium',
@@ -71,11 +86,15 @@ class ShoppingItem(models.Model):
     name = models.CharField(max_length=200, verbose_name='Producto')
     brand = models.CharField(max_length=150, blank=True, verbose_name='Marca')
     quantity = models.PositiveIntegerField(default=1, verbose_name='Cantidad')
-    unit_price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=Decimal('0.00'),
-        verbose_name='Precio por Unidad ($)'
+    unit_price = models.PositiveIntegerField(
+        default=0,
+        blank=True,
+        null=True,
+        verbose_name='Precio por Unidad (CLP $)'
+    )
+    has_unknown_price = models.BooleanField(
+        default=False,
+        verbose_name='¿Sin precio definido aún?'
     )
     is_purchased = models.BooleanField(default=False, verbose_name='¿Comprado?')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Fecha agregado')
@@ -90,7 +109,27 @@ class ShoppingItem(models.Model):
         return f"{self.name}{brand_str} x{self.quantity}"
 
     @property
-    def total_price(self) -> Decimal:
-        """Calcula el total por producto: cantidad * precio por unidad."""
-        total = Decimal(self.quantity) * self.unit_price
-        return total.quantize(Decimal('0.01'))
+    def is_price_unknown(self) -> bool:
+        """Retorna True si el producto no tiene precio o se marcó como desconocido."""
+        return self.has_unknown_price or self.unit_price is None or self.unit_price == 0
+
+    @property
+    def total_price(self) -> int:
+        """Calcula el total por producto: cantidad * precio unitario (o 0 si sin precio)."""
+        if self.is_price_unknown:
+            return 0
+        return int(self.quantity * self.unit_price)
+
+    @property
+    def formatted_unit_price(self) -> str:
+        """Formatea el precio unitario en Pesos Chilenos."""
+        if self.is_price_unknown:
+            return "Sin precio"
+        return f"${self.unit_price:,.0f}".replace(",", ".")
+
+    @property
+    def formatted_total_price(self) -> str:
+        """Formatea el subtotal en Pesos Chilenos."""
+        if self.is_price_unknown:
+            return "Sin precio"
+        return f"${self.total_price:,.0f}".replace(",", ".")

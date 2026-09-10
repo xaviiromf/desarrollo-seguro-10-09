@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags shopping_tags %}
 
 {% block title %}{{ shopping_list.name }} - Detalle de Lista{% endblock %}
 
@@ -49,13 +49,20 @@
         <p class="text-sm text-slate-500">
             {{ shopping_list.description|default:"Sin notas adicionales." }}
         </p>
+
+        {% if shopping_list.has_items_without_price %}
+            <div class="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-800">
+                <span>⚠️</span>
+                <span>Hay <strong>{{ shopping_list.items_without_price_count }}</strong> producto(s) sin precio definido. El total acumulado solo suma los ítems valorizados.</span>
+            </div>
+        {% endif %}
     </div>
 
     <!-- Caja de Total Acumulado -->
     <div class="bg-emerald-50/70 border-2 border-emerald-200 rounded-2xl p-5 text-right min-w-[220px]">
         <p class="text-xs font-bold uppercase tracking-wider text-emerald-800">Total Lista de Compras</p>
         <h2 id="grand-list-total" class="text-3xl font-extrabold text-emerald-900 my-0.5">
-            ${{ shopping_list.total_amount|floatformat:2 }}
+            {{ shopping_list.total_amount|clp }}
         </h2>
         <p class="text-xs text-emerald-700 font-medium">
             {{ shopping_list.items_count }} producto(s) &bull; {{ shopping_list.total_units }} unidad(es)
@@ -124,10 +131,20 @@
                                     {{ item.quantity }}
                                 </td>
                                 <td class="py-3.5 px-4 text-right text-slate-500">
-                                    ${{ item.unit_price|floatformat:2 }}
+                                    {% if item.is_price_unknown %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">
+                                            Sin precio
+                                        </span>
+                                    {% else %}
+                                        {{ item.unit_price|clp }}
+                                    {% endif %}
                                 </td>
                                 <td class="py-3.5 px-4 text-right font-bold text-emerald-700">
-                                    ${{ item.total_price|floatformat:2 }}
+                                    {% if item.is_price_unknown %}
+                                        <span class="text-xs text-slate-400 italic">Por definir</span>
+                                    {% else %}
+                                        {{ item.total_price|clp }}
+                                    {% endif %}
                                 </td>
                                 <td class="py-3.5 px-4 text-center">
                                     <div class="flex items-center justify-center gap-1">
@@ -155,7 +172,7 @@
                             </td>
                             <td class="py-3.5 px-4 text-right text-slate-400">-</td>
                             <td class="py-3.5 px-4 text-right text-emerald-800 text-base">
-                                ${{ shopping_list.total_amount|floatformat:2 }}
+                                {{ shopping_list.total_amount|clp }}
                             </td>
                             <td></td>
                         </tr>

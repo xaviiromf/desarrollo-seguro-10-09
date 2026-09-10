@@ -15,15 +15,40 @@ class ShoppingListForm(forms.ModelForm):
 
 
 class ShoppingItemForm(forms.ModelForm):
+    has_unknown_price = forms.BooleanField(
+        required=False,
+        label="¿Sin precio definido?",
+        help_text="Marca esta casilla si aún no conoces el precio del producto.",
+        widget=forms.CheckboxInput(attrs={'id': 'id_has_unknown_price'})
+    )
+
     class Meta:
         model = ShoppingItem
-        fields = ['name', 'brand', 'quantity', 'unit_price']
-        widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Nombre del producto'}),
-            'brand': forms.TextInput(attrs={'placeholder': 'Marca (opcional)'}),
-            'quantity': forms.NumberInput(attrs={'min': 1, 'step': 1, 'id': 'id_quantity'}),
-            'unit_price': forms.NumberInput(attrs={'min': 0, 'step': '0.01', 'id': 'id_unit_price'}),
+        fields = ['name', 'brand', 'quantity', 'unit_price', 'has_unknown_price']
+        labels = {
+            'name': 'Producto',
+            'brand': 'Marca (opcional)',
+            'quantity': 'Cantidad',
+            'unit_price': 'Precio por unidad (CLP $)',
         }
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Ej. Leche Entera, Manzanas...'}),
+            'brand': forms.TextInput(attrs={'placeholder': 'Ej. Colun, Soprole...'}),
+            'quantity': forms.NumberInput(attrs={'min': 1, 'step': 1, 'id': 'id_quantity'}),
+            'unit_price': forms.NumberInput(attrs={'min': 0, 'step': 1, 'id': 'id_unit_price', 'placeholder': 'Ej. 1350'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        has_unknown_price = cleaned_data.get('has_unknown_price')
+        unit_price = cleaned_data.get('unit_price')
+        if has_unknown_price:
+            cleaned_data['unit_price'] = 0
+        elif unit_price is None:
+            cleaned_data['unit_price'] = 0
+            cleaned_data['has_unknown_price'] = True
+        return cleaned_data
+
 
 
 class UserRegistrationForm(UserCreationForm):
