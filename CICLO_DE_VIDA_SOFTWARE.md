@@ -217,43 +217,46 @@ Destroying test database for alias 'default'...
 
 ## 5. Fase de Despliegue y Puesta en Producción
 
-### 5.1. Pasos de Instalación y Puesta en Marcha
-1. **Clonación del repositorio:**
+### 5.1. Despliegue en Plataforma Cloud (PythonAnywhere)
+Para una guía detallada paso a paso consulte [PYTHONANYWHERE_DEPLOY.md](file:///home/xavi/Projects/desarrollo-seguro/10-09/django-project/PYTHONANYWHERE_DEPLOY.md).
+
+1. **Clonación del repositorio en la consola Bash de PythonAnywhere:**
    ```bash
    git clone https://github.com/xaviromf-boop/desarrollo-seguro-10-09.git
-   cd desarrollo-seguro-10-09
+   cd desarrollo-seguro-10-09/django-project
    ```
 2. **Creación del entorno virtual e instalación de dependencias:**
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate
+   mkvirtualenv --python=/usr/bin/python3.10 emprendevirtual
    pip install -r requirements.txt
    ```
-3. **Instalación de dependencias de Node.js para Tailwind CSS:**
+3. **Variables de entorno de codificación UTF-8:**
    ```bash
-   python manage.py tailwind install
-   python manage.py tailwind build
+   export LANG=C.UTF-8
+   export LC_ALL=C.UTF-8
+   export PYTHONIOENCODING=utf-8
    ```
 4. **Configuración del archivo `.env`:**
-   ```env
-   DJANGO_SECRET_KEY=tu-clave-secreta-de-produccion
-   DJANGO_DEBUG=False
-   ALLOWED_HOSTS=tudominio.com,localhost,127.0.0.1
-   DATABASE_URL=sqlite:///db.sqlite3
+   ```bash
+   cp .env.example .env
+   chmod 600 .env
    ```
+   Configurar `DEBUG=False`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `SECURE_SSL_REDIRECT=True`, `SESSION_COOKIE_SECURE=True`, `CSRF_COOKIE_SECURE=True`, `SECURE_HSTS_SECONDS=3600`.
 5. **Migraciones y datos semilla:**
    ```bash
    python manage.py migrate
    python init_data.py
    ```
-6. **Recolección de archivos estáticos:**
+6. **Recolección de archivos estáticos y verificación:**
    ```bash
    python manage.py collectstatic --noinput
+   python manage.py check --deploy
    ```
-7. **Inicio del servidor de producción:**
-   ```bash
-   gunicorn supermarket_project.wsgi:application --bind 0.0.0.0:8000 --workers 3
-   ```
+7. **Pestaña Web de PythonAnywhere:**
+   - **Source & Working directory:** `/home/<usuario>/desarrollo-seguro-10-09/django-project`
+   - **WSGI file:** Usar la configuración documentada en [pythonanywhere_wsgi.py](file:///home/xavi/Projects/desarrollo-seguro/10-09/django-project/pythonanywhere_wsgi.py).
+   - **Static files:** Mapear `/static/` a `staticfiles/` y `/media/` a `media/`.
+   - **Reload:** Recargar la aplicación web desde la interfaz.
 
 ---
 
