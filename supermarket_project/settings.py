@@ -28,13 +28,17 @@ SECRET_KEY = env('SECRET_KEY', default=env('DJANGO_SECRET_KEY', default='django-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=env.bool('DJANGO_DEBUG', default=False))
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
+ALLOWED_HOSTS = [h.strip() for h in env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])]
+if '.pythonanywhere.com' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('.pythonanywhere.com')
 
 # Configuración de Seguridad y Proxy Reverso (Requerimientos PythonAnywhere - PDF)
-CSRF_TRUSTED_ORIGINS = env.list(
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in env.list(
     "CSRF_TRUSTED_ORIGINS",
-    default=[],
-)
+    default=["https://*.pythonanywhere.com"],
+)]
+if "https://*.pythonanywhere.com" not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append("https://*.pythonanywhere.com")
 
 # PythonAnywhere entrega HTTPS mediante su proxy inverso.
 SECURE_PROXY_SSL_HEADER = (

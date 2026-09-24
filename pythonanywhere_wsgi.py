@@ -11,10 +11,8 @@ import os
 import sys
 from django.core.wsgi import get_wsgi_application
 
-# Ruta al directorio raíz de tu proyecto Django en PythonAnywhere
-# Ajusta según la carpeta en tu cuenta de PythonAnywhere:
-# Por ejemplo: os.path.expanduser("~/desarrollo-seguro-10-09/django-project")
-path = os.path.expanduser("~/desarrollo-seguro-10-09/django-project")
+# Ruta al directorio raíz de tu proyecto Django en PythonAnywhere:
+path = os.path.expanduser("~/desarrollo-seguro-10-09")
 if path not in sys.path:
     sys.path.insert(0, path)
 
