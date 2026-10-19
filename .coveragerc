@@ -1,3 +1,4 @@
 [run]
 source = shopping,supermarket_project
 omit = */migrations/*,*/tests.py
+relative_files = True
