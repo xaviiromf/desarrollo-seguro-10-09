@@ -1,0 +1,18 @@
+Name                                     Stmts   Miss  Cover
+------------------------------------------------------------
+shopping/__init__.py                         0      0   100%
+shopping/admin.py                           42     10    76%
+shopping/apps.py                             4      0   100%
+shopping/forms.py                           47      5    89%
+shopping/models.py                         121      9    93%
+shopping/templatetags/__init__.py            0      0   100%
+shopping/templatetags/shopping_tags.py      11      3    73%
+shopping/urls.py                             4      0   100%
+shopping/views.py                          222     55    75%
+supermarket_project/__init__.py              0      0   100%
+supermarket_project/asgi.py                  4      4     0%
+supermarket_project/settings.py             48      2    96%
+supermarket_project/urls.py                 12      2    83%
+supermarket_project/wsgi.py                  4      4     0%
+------------------------------------------------------------
+TOTAL                                      519     94    82%

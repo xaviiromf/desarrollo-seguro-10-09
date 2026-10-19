@@ -1,0 +1,48 @@
+# Comando: python manage.py test shopping -v 2
+# Fecha: 2026-10-19 16:59:51 -0300 | commit 11f11d0
+# Entorno: local -> Python 3.14.7, Django 5.2.17
+
+Found 25 test(s).
+test_backend_editar_con_cantidad_sobre_maximo_no_modifica (shopping.tests.ShoppingItemValidationTests.test_backend_editar_con_cantidad_sobre_maximo_no_modifica) ... ok
+test_cantidad_bajo_el_minimo_rechazada (shopping.tests.ShoppingItemValidationTests.test_cantidad_bajo_el_minimo_rechazada) ... ok
+test_cantidad_dentro_del_rango_aceptada (shopping.tests.ShoppingItemValidationTests.test_cantidad_dentro_del_rango_aceptada) ... ok
+test_cantidad_faltante_rechazada (shopping.tests.ShoppingItemValidationTests.test_cantidad_faltante_rechazada) ... ok
+test_cantidad_maximo_exacto_aceptada (shopping.tests.ShoppingItemValidationTests.test_cantidad_maximo_exacto_aceptada) ... ok
+test_cantidad_minimo_exacto_aceptada (shopping.tests.ShoppingItemValidationTests.test_cantidad_minimo_exacto_aceptada) ... ok
+test_cantidad_sobre_el_maximo_rechazada (shopping.tests.ShoppingItemValidationTests.test_cantidad_sobre_el_maximo_rechazada) ... ok
+test_precio_cero_frontera_queda_sin_precio (shopping.tests.ShoppingItemValidationTests.test_precio_cero_frontera_queda_sin_precio) ... ok
+test_precio_legitimo_aceptado (shopping.tests.ShoppingItemValidationTests.test_precio_legitimo_aceptado) ... ok
+test_precio_negativo_rechazado (shopping.tests.ShoppingItemValidationTests.test_precio_negativo_rechazado) ... ok
+test_precio_no_numerico_rechazado (shopping.tests.ShoppingItemValidationTests.test_precio_no_numerico_rechazado) ... ok
+test_precio_vacio_se_marca_sin_precio (shopping.tests.ShoppingItemValidationTests.test_precio_vacio_se_marca_sin_precio) ... ok
+test_budget_limit_and_overbudget_calculations (shopping.tests.ShoppingModelAndCalculationTests.test_budget_limit_and_overbudget_calculations)
+Verifica cálculos de presupuesto máximo y alerta de exceso. ... ok
+test_bulk_toggle_items (shopping.tests.ShoppingModelAndCalculationTests.test_bulk_toggle_items)
+Prueba las acciones masivas de marcar y desmarcar todos los productos. ... ok
+test_clear_purchased_items (shopping.tests.ShoppingModelAndCalculationTests.test_clear_purchased_items)
+Verifica que solo se eliminen los productos marcados como comprados. ... ok
+test_create_item_via_post_clp (shopping.tests.ShoppingModelAndCalculationTests.test_create_item_via_post_clp)
+Prueba la creación de un nuevo producto con precio en CLP y sin precio mediante POST. ... ok
+test_duplicate_shopping_list (shopping.tests.ShoppingModelAndCalculationTests.test_duplicate_shopping_list)
+Prueba la duplicación completa de una lista con ítems reiniciados a pendientes. ... ok
+test_export_csv (shopping.tests.ShoppingModelAndCalculationTests.test_export_csv)
+Verifica la exportación estructurada a formato CSV y el aislamiento por usuario. ... ok
+test_item_total_calculation_clp (shopping.tests.ShoppingModelAndCalculationTests.test_item_total_calculation_clp)
+Verifica que el subtotal en CLP sea exactamente cantidad * precio unitario entero. ... ok
+test_item_without_price_calculation (shopping.tests.ShoppingModelAndCalculationTests.test_item_without_price_calculation)
+Verifica el comportamiento de productos marcados como 'sin precio'. ... ok
+test_priority_ordering (shopping.tests.ShoppingModelAndCalculationTests.test_priority_ordering)
+Verifica que el ordenamiento por defecto priorice Alta sobre Baja. ... ok
+test_shopping_list_total_amount_calculation_clp (shopping.tests.ShoppingModelAndCalculationTests.test_shopping_list_total_amount_calculation_clp)
+Verifica que el total de la lista sume correctamente los subtotales en CLP ignorando los sin precio. ... ok
+test_toggle_purchased_item (shopping.tests.ShoppingModelAndCalculationTests.test_toggle_purchased_item)
+Verifica la alternancia reactiva del estado 'comprado' de un producto. ... ok
+test_user_data_isolation (shopping.tests.ShoppingModelAndCalculationTests.test_user_data_isolation)
+Asegura que las listas de un usuario no sean accesibles ni visibles por otro usuario. ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 5.643s
+
+OK
+ OK
+System check identified no issues (0 silenced).
