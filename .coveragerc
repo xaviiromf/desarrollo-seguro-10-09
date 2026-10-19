@@ -1,4 +1,11 @@
 [run]
-source = shopping,supermarket_project
-omit = */migrations/*,*/tests.py
+source = .
+omit =
+    venv/*
+    */migrations/*
+    */tests.py
+    theme/*
+    init_data.py
+    pythonanywhere_wsgi.py
+    manage.py
 relative_files = True

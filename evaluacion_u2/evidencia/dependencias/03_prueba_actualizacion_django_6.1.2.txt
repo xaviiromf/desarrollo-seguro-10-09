@@ -1,0 +1,8 @@
+# Comando: python manage.py test shopping  +  uv pip check (equivalente a pip check)
+# Fecha: 2026-10-19 17:01:30 -0300 | commit 2dedf83
+# Entorno: prueba de actualización -> Python 3.12.15, Django 6.1.2 (resto de paquetes = versiones de PythonAnywhere)
+
+Ran 25 tests in 7.844s
+OK
+System check identified no issues (0 silenced).
+All installed packages are compatible
