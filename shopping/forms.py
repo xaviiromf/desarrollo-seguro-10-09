@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import ShoppingList, ShoppingItem
+from .models import ShoppingList, ShoppingItem, QUANTITY_MIN, QUANTITY_MAX
 
 
 class ShoppingListForm(forms.ModelForm):
@@ -42,7 +42,7 @@ class ShoppingItemForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Ej. Leche Entera, Manzanas...'}),
             'brand': forms.TextInput(attrs={'placeholder': 'Ej. Colun, Soprole...'}),
-            'quantity': forms.NumberInput(attrs={'min': 1, 'step': 1, 'id': 'id_quantity'}),
+            'quantity': forms.NumberInput(attrs={'min': QUANTITY_MIN, 'max': QUANTITY_MAX, 'step': 1, 'id': 'id_quantity'}),
             'unit_price': forms.NumberInput(attrs={'min': 0, 'step': 1, 'id': 'id_unit_price', 'placeholder': 'Ej. 1350'}),
         }
 

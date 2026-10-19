@@ -1,5 +1,10 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
+
+# Regla de negocio: cantidad por producto entre 1 y 999 unidades (validada en el servidor).
+QUANTITY_MIN = 1
+QUANTITY_MAX = 999
 
 
 class Priority(models.IntegerChoices):
@@ -153,7 +158,14 @@ class ShoppingItem(models.Model):
         default=Category.PANTRY,
         verbose_name='Categoría'
     )
-    quantity = models.PositiveIntegerField(default=1, verbose_name='Cantidad')
+    quantity = models.PositiveIntegerField(
+        default=1,
+        validators=[
+            MinValueValidator(QUANTITY_MIN, message=f'La cantidad mínima es {QUANTITY_MIN}.'),
+            MaxValueValidator(QUANTITY_MAX, message=f'La cantidad máxima es {QUANTITY_MAX}.'),
+        ],
+        verbose_name='Cantidad'
+    )
     unit_price = models.PositiveIntegerField(
         default=0,
         blank=True,

@@ -334,7 +334,11 @@ class ShoppingItemCreateView(LoginRequiredMixin, CreateView):
 
     def form_invalid(self, form):
         list_pk = self.kwargs.get('list_pk')
-        messages.error(self.request, "Por favor verifica los datos del producto ingresado.")
+        detalle = " ".join(
+            f"{form.fields[campo].label}: {' '.join(errores)}" if campo in form.fields else ' '.join(errores)
+            for campo, errores in form.errors.items()
+        )
+        messages.error(self.request, f"No se agregó el producto. {detalle}")
         return redirect('shopping:list_detail', pk=list_pk)
 
 
