@@ -1,0 +1,61 @@
+# Comando: python manage.py test shopping.tests.ShoppingItemValidationTests -v 2
+# Fecha: 2026-10-19 16:57:08 -0300
+# Rama/commit: evaluacion-u2 @ ced924d (tests nuevos, control SIN implementar)
+# Entorno: Python 3.14.7, Django 5.2.17
+
+Found 13 test(s).
+test_backend_editar_con_cantidad_sobre_maximo_no_modifica (shopping.tests.ShoppingItemValidationTests.test_backend_editar_con_cantidad_sobre_maximo_no_modifica) ... FAIL
+test_cantidad_bajo_el_minimo_rechazada (shopping.tests.ShoppingItemValidationTests.test_cantidad_bajo_el_minimo_rechazada) ... FAIL
+test_cantidad_dentro_del_rango_aceptada (shopping.tests.ShoppingItemValidationTests.test_cantidad_dentro_del_rango_aceptada) ... ok
+test_cantidad_faltante_rechazada (shopping.tests.ShoppingItemValidationTests.test_cantidad_faltante_rechazada) ... ok
+test_cantidad_maximo_exacto_aceptada (shopping.tests.ShoppingItemValidationTests.test_cantidad_maximo_exacto_aceptada) ... ok
+test_cantidad_minimo_exacto_aceptada (shopping.tests.ShoppingItemValidationTests.test_cantidad_minimo_exacto_aceptada) ... ok
+test_cantidad_sobre_el_maximo_rechazada (shopping.tests.ShoppingItemValidationTests.test_cantidad_sobre_el_maximo_rechazada) ... FAIL
+test_precio_cero_frontera_queda_sin_precio (shopping.tests.ShoppingItemValidationTests.test_precio_cero_frontera_queda_sin_precio) ... ok
+test_precio_legitimo_aceptado (shopping.tests.ShoppingItemValidationTests.test_precio_legitimo_aceptado) ... ok
+test_precio_negativo_rechazado (shopping.tests.ShoppingItemValidationTests.test_precio_negativo_rechazado) ... ok
+test_precio_no_numerico_rechazado (shopping.tests.ShoppingItemValidationTests.test_precio_no_numerico_rechazado) ... ok
+test_precio_vacio_se_marca_sin_precio (shopping.tests.ShoppingItemValidationTests.test_precio_vacio_se_marca_sin_precio) ... ok
+
+======================================================================
+FAIL: test_backend_crear_con_cantidad_cero_no_guarda (shopping.tests.ShoppingItemValidationTests.test_backend_crear_con_cantidad_cero_no_guarda)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/xavi/Projects/desarrollo-seguro/10-09/django-project/shopping/tests.py", line 396, in test_backend_crear_con_cantidad_cero_no_guarda
+    self.assertFalse(ShoppingItem.objects.filter(name='Pan').exists())
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_backend_editar_con_cantidad_sobre_maximo_no_modifica (shopping.tests.ShoppingItemValidationTests.test_backend_editar_con_cantidad_sobre_maximo_no_modifica)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/xavi/Projects/desarrollo-seguro/10-09/django-project/shopping/tests.py", line 404, in test_backend_editar_con_cantidad_sobre_maximo_no_modifica
+    self.assertEqual(response.status_code, 200)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 302 != 200
+
+======================================================================
+FAIL: test_cantidad_bajo_el_minimo_rechazada (shopping.tests.ShoppingItemValidationTests.test_cantidad_bajo_el_minimo_rechazada)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/xavi/Projects/desarrollo-seguro/10-09/django-project/shopping/tests.py", line 344, in test_cantidad_bajo_el_minimo_rechazada
+    self.assertFalse(form.is_valid())
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_cantidad_sobre_el_maximo_rechazada (shopping.tests.ShoppingItemValidationTests.test_cantidad_sobre_el_maximo_rechazada)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/xavi/Projects/desarrollo-seguro/10-09/django-project/shopping/tests.py", line 355, in test_cantidad_sobre_el_maximo_rechazada
+    self.assertFalse(form.is_valid())
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.557s
+
+FAILED (failures=4)
+ OK
+System check identified no issues (0 silenced).

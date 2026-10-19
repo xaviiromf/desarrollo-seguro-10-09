@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
 
+from .forms import ShoppingItemForm
 from .models import ShoppingList, ShoppingItem, Priority
 
 
@@ -314,3 +315,93 @@ class ShoppingModelAndCalculationTests(TestCase):
         # pending debe seguir existiendo
         self.assertTrue(ShoppingItem.objects.filter(pk=pending.pk).exists())
 
+
+
+class ShoppingItemValidationTests(TestCase):
+    """
+    Contrato de entrada del formulario de productos (Evaluación U2, criterio 2.1.3).
+
+    - quantity: obligatoria, número entero entre 1 y 999 (ambos incluidos).
+    - unit_price: opcional, número entero >= 0 en CLP. Vacío o 0 se registra como "sin precio".
+    """
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='validador', password='clave-de-prueba-123')
+        self.shopping_list = ShoppingList.objects.create(user=self.user, name='Lista de pruebas')
+
+    def build_form(self, **overrides):
+        data = {'name': 'Leche Entera', 'brand': 'Marca Ficticia', 'category': 'LACTEOS',
+                'quantity': '5', 'unit_price': '1350'}
+        data.update(overrides)
+        return ShoppingItemForm(data=data)
+
+    # --- Campo quantity ---
+    def test_cantidad_dentro_del_rango_aceptada(self):
+        self.assertTrue(self.build_form(quantity='5').is_valid())
+
+    def test_cantidad_bajo_el_minimo_rechazada(self):
+        form = self.build_form(quantity='0')
+        self.assertFalse(form.is_valid())
+        self.assertIn('quantity', form.errors)
+
+    def test_cantidad_minimo_exacto_aceptada(self):
+        self.assertTrue(self.build_form(quantity='1').is_valid())
+
+    def test_cantidad_maximo_exacto_aceptada(self):
+        self.assertTrue(self.build_form(quantity='999').is_valid())
+
+    def test_cantidad_sobre_el_maximo_rechazada(self):
+        form = self.build_form(quantity='1000')
+        self.assertFalse(form.is_valid())
+        self.assertIn('quantity', form.errors)
+
+    def test_cantidad_faltante_rechazada(self):
+        form = self.build_form(quantity='')
+        self.assertFalse(form.is_valid())
+        self.assertIn('quantity', form.errors)
+
+    # --- Campo unit_price (control existente, verificado con pruebas nuevas) ---
+    def test_precio_legitimo_aceptado(self):
+        form = self.build_form(unit_price='1350')
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['unit_price'], 1350)
+
+    def test_precio_negativo_rechazado(self):
+        form = self.build_form(unit_price='-5')
+        self.assertFalse(form.is_valid())
+        self.assertIn('unit_price', form.errors)
+
+    def test_precio_no_numerico_rechazado(self):
+        form = self.build_form(unit_price='abc')
+        self.assertFalse(form.is_valid())
+        self.assertIn('unit_price', form.errors)
+
+    def test_precio_cero_frontera_queda_sin_precio(self):
+        form = self.build_form(unit_price='0')
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form.save(commit=False).is_price_unknown)
+
+    def test_precio_vacio_se_marca_sin_precio(self):
+        form = self.build_form(unit_price='')
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form.cleaned_data['has_unknown_price'])
+        self.assertEqual(form.cleaned_data['unit_price'], 0)
+
+    # --- Backend: POST directo a las vistas, sin restricciones del navegador ---
+    def test_backend_crear_con_cantidad_cero_no_guarda(self):
+        self.client.force_login(self.user)
+        url = reverse('shopping:item_create', kwargs={'list_pk': self.shopping_list.pk})
+        response = self.client.post(url, {'name': 'Pan', 'quantity': '0', 'unit_price': '1000'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(ShoppingItem.objects.filter(name='Pan').exists())
+        self.assertIn('Cantidad', ' '.join(str(m) for m in response.context['messages']))
+
+    def test_backend_editar_con_cantidad_sobre_maximo_no_modifica(self):
+        item = ShoppingItem.objects.create(shopping_list=self.shopping_list, name='Arroz', quantity=2, unit_price=1200)
+        self.client.force_login(self.user)
+        url = reverse('shopping:item_update', kwargs={'pk': item.pk})
+        response = self.client.post(url, {'name': 'Arroz', 'quantity': '1000', 'unit_price': '1200'})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('quantity', response.context['form'].errors)
+        item.refresh_from_db()
+        self.assertEqual(item.quantity, 2)
