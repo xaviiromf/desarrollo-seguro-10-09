@@ -1,0 +1,8 @@
+# Comando: python hostcheck.py  (.env RECOMENDADO: ALLOWED_HOSTS=actividaddjango1.pythonanywhere.com, CSRF_TRUSTED_ORIGINS=https://actividaddjango1.pythonanywhere.com)
+# Fecha: 2026-10-19 16:59:00 -0300 | rama evaluacion-u2, settings.py corregido
+
+ALLOWED_HOSTS        = ['actividaddjango1.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS = ['https://actividaddjango1.pythonanywhere.com']
+Host aceptado? actividaddjango1.pythonanywhere.com    -> True
+Host aceptado? otro-usuario.pythonanywhere.com        -> False
+Host aceptado? evil.example.com                       -> False

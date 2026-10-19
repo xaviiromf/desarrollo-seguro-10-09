@@ -1,0 +1,8 @@
+# Comando: python hostcheck.py  (mismos valores del .env de PythonAnywhere; SECRET_KEY ficticia)
+# Fecha: 2026-10-19 16:59:00 -0300 | rama evaluacion-u2, settings.py corregido
+
+ALLOWED_HOSTS        = ['127.0.0.1', 'localhost']
+CSRF_TRUSTED_ORIGINS = ['https://ActividadDango1.pythonanywhere.com']
+Host aceptado? actividaddjango1.pythonanywhere.com    -> False
+Host aceptado? otro-usuario.pythonanywhere.com        -> False
+Host aceptado? evil.example.com                       -> False

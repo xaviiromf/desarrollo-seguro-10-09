@@ -10,11 +10,15 @@ Esta guía detalla paso a paso el procedimiento exacto adaptado a la estructura 
 El **Error 400** en Django ocurre cuando `DEBUG=False` y el dominio que accede a la web (en este caso `ActividadDjango1.pythonanywhere.com`) **no se encuentra listado en `ALLOWED_HOSTS`**.
 
 ### ¿Cómo solucionarlo?
-1. Se ha actualizado el código en `supermarket_project/settings.py` para incluir automáticamente `'.pythonanywhere.com'` y `'https://*.pythonanywhere.com'` en `ALLOWED_HOSTS` y `CSRF_TRUSTED_ORIGINS`.
-2. En tu archivo `.env` en PythonAnywhere (`/home/ActividadDjango1/desarrollo-seguro-10-09/.env`), asegúrate de tener:
+1. `supermarket_project/settings.py` **no agrega comodines**: solo acepta los dominios declarados en el `.env`. Un comodín como `.pythonanywhere.com` aceptaría también las aplicaciones de otros usuarios de PythonAnywhere.
+2. En tu archivo `.env` en PythonAnywhere (`/home/ActividadDjango1/desarrollo-seguro-10-09/.env`), declara exactamente tu dominio:
    ```env
-   ALLOWED_HOSTS=ActividadDjango1.pythonanywhere.com,localhost,127.0.0.1,.pythonanywhere.com
-   CSRF_TRUSTED_ORIGINS=https://ActividadDjango1.pythonanywhere.com,https://*.pythonanywhere.com
+   ALLOWED_HOSTS=actividaddjango1.pythonanywhere.com
+   CSRF_TRUSTED_ORIGINS=https://actividaddjango1.pythonanywhere.com
+   ```
+3. `SECRET_KEY` es obligatoria y debe ser única por entorno. Genera una nueva con:
+   ```bash
+   python -c "from django.core.management.utils import get_random_secret_key as g; print(g())"
    ```
 
 ---

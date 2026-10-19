@@ -1,0 +1,8 @@
+# Comando: python hostcheck.py  (carga settings con DEBUG/ALLOWED_HOSTS/CSRF_TRUSTED_ORIGINS iguales al .env de PythonAnywhere; SECRET_KEY ficticia)
+# Fecha: 2026-10-19 16:58:27 -0300 | commit cbab41a (antes de corregir settings.py)
+
+ALLOWED_HOSTS        = ['127.0.0.1', 'localhost', '.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS = ['https://ActividadDango1.pythonanywhere.com', 'https://*.pythonanywhere.com']
+Host aceptado? actividaddjango1.pythonanywhere.com    -> True
+Host aceptado? otro-usuario.pythonanywhere.com        -> True
+Host aceptado? evil.example.com                       -> False

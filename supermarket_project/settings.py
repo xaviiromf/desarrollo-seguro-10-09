@@ -23,22 +23,17 @@ if os.path.exists(env_file):
     environ.Env.read_env(env_file)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY', default=env('DJANGO_SECRET_KEY', default='django-insecure-supermarket-default-dev-key'))
+# Sin valor por defecto: si falta en el entorno, Django no arranca (ImproperlyConfigured) en vez de usar una clave conocida.
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=env.bool('DJANGO_DEBUG', default=False))
 
+# Solo los dominios declarados en el entorno; sin comodines que acepten subdominios de otros usuarios.
 ALLOWED_HOSTS = [h.strip() for h in env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])]
-if '.pythonanywhere.com' not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append('.pythonanywhere.com')
 
 # Configuración de Seguridad y Proxy Reverso (Requerimientos PythonAnywhere - PDF)
-CSRF_TRUSTED_ORIGINS = [o.strip() for o in env.list(
-    "CSRF_TRUSTED_ORIGINS",
-    default=["https://*.pythonanywhere.com"],
-)]
-if "https://*.pythonanywhere.com" not in CSRF_TRUSTED_ORIGINS:
-    CSRF_TRUSTED_ORIGINS.append("https://*.pythonanywhere.com")
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in env.list("CSRF_TRUSTED_ORIGINS", default=[])]
 
 # PythonAnywhere entrega HTTPS mediante su proxy inverso.
 SECURE_PROXY_SSL_HEADER = (
