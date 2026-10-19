@@ -3,16 +3,19 @@
  * y opción "Sin precio definido".
  */
 
+// Formato nativo es-CL (separador de miles "."), sin la regex con backtracking señalada por SonarQube (javascript:S8786).
+const clpFormatter = new Intl.NumberFormat('es-CL', { maximumFractionDigits: 0 });
+
+function formatCLP(amount) {
+    return '$' + clpFormatter.format(Math.round(amount));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Calculadora reactiva en vivo en el formulario de agregar/editar producto
     const qtyInput = document.getElementById('id_quantity');
     const priceInput = document.getElementById('id_unit_price');
     const unknownPriceCheckbox = document.getElementById('id_has_unknown_price');
     const subtotalDisplay = document.getElementById('live-item-subtotal');
-
-    function formatCLP(amount) {
-        return '$' + Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
 
     function updateLiveSubtotal() {
         if (!subtotalDisplay) return;
