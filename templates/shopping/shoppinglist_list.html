@@ -45,15 +45,18 @@
     </div>
 
     <form method="get" class="flex flex-wrap items-center gap-3">
+        <label for="list-search" class="sr-only">Buscar listas por nombre</label>
         <input 
             type="text" 
+            id="list-search"
             name="q" 
             value="{{ search_query }}" 
             placeholder="Buscar por nombre..." 
             class="text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-xs px-3.5 py-2 w-48"
         >
 
-        <select name="sort" class="text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-xs px-3.5 py-2" onchange="this.form.submit()">
+        <label for="list-sort" class="sr-only">Ordenar listas</label>
+        <select id="list-sort" name="sort" class="text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-xs px-3.5 py-2" onchange="this.form.submit()">
             <option value="priority" {% if current_sort == 'priority' %}selected{% endif %}>
                 ⚡ Prioridad (Alta a Baja)
             </option>

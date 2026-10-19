@@ -183,6 +183,7 @@
 
             <!-- Acciones Masivas y Buscador en Vivo -->
             <div class="flex flex-wrap items-center gap-2">
+                <label for="live-table-search" class="sr-only">Buscar productos en la tabla</label>
                 <input 
                     type="text" 
                     id="live-table-search" 
@@ -253,8 +254,10 @@
                                     <td class="py-3 px-3.5 text-center">
                                         <form action="{% url 'shopping:item_toggle' item.id %}" method="post" class="inline">
                                             {% csrf_token %}
+                                            <label for="purchased-{{ item.id }}" class="sr-only">Marcar {{ item.name }} como comprado</label>
                                             <input 
                                                 type="checkbox" 
+                                                id="purchased-{{ item.id }}"
                                                 class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer js-toggle-purchased" 
                                                 {% if item.is_purchased %}checked{% endif %}
                                                 title="Marcar como comprado"
