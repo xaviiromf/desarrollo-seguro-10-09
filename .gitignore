@@ -12,3 +12,6 @@ staticfiles/
 .coverage
 coverage.xml
 htmlcov/
+
+# Archivos de bloqueo de LibreOffice
+.~lock.*#
