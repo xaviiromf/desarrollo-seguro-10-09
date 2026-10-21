@@ -1,0 +1,15 @@
+# Prueba de punta a punta sobre https://actividaddjango1.pythonanywhere.com, con datos ficticios
+# Fecha: 2026-10-20 00:38 UTC | Usuario temporal «qa_temporal_u2» creado para la prueba y BORRADO al terminar
+#   (delete -> 3 objetos: 1 usuario, 1 lista, 1 producto). Herramienta: curl con cookies y token CSRF reales del formulario.
+
+== HTTP -> HTTPS (force_https)
+GET  http://actividaddjango1.pythonanywhere.com/login/   -> 302 -> https://actividaddjango1.pythonanywhere.com/login/
+== Login (valida CSRF_TRUSTED_ORIGINS / ALLOWED_HOSTS corregidos)
+GET  https://actividaddjango1.pythonanywhere.com/login/  -> 200
+POST https://actividaddjango1.pythonanywhere.com/login/  -> 302 -> https://actividaddjango1.pythonanywhere.com/
+== Validación en el servidor (POST directo, sin navegador)
+POST /lists/6/items/add/  name=Producto QA, quantity=0, unit_price=1000
+     -> mensaje: «No se agregó el producto. Cantidad: La cantidad mínima es 1.»  (no se guardó)
+POST /lists/6/items/add/  name=Producto QA valido, quantity=5, unit_price=1000
+     -> mensaje: «Producto 'Producto QA valido' agregado a la lista. Subtotal: $5,000.00»
+        (formato de miles corregido a CLP en el commit 37295d1)
