@@ -99,7 +99,8 @@ El texto hablado suma unas 1325 palabras: unos 8.8 minutos a ritmo normal, más 
 ### Lámina 3: SonarQube: lo que midió y lo que no
 
 **Hacer:**
-- Señalar el «OK» del Quality Gate.
+- Señalar en la captura el «Passed» del Quality Gate y las tres «A».
+- Señalar la fila de abajo (inicial → final).
 - Terminar en el recuadro amarillo de límites.
 
 **Xavier dice** (unos 45 s):
@@ -110,6 +111,7 @@ El texto hablado suma unas 1325 palabras: unos 8.8 minutos a ritmo normal, más 
 ### Lámina 4: Observación 1
 
 **Hacer:**
+- Señalar en la captura el aviso verde «Closed (Fixed)».
 - Señalar «Antes» y «Después» sin leer el código.
 - Terminar en la tarjeta verde «Decisión».
 
@@ -121,6 +123,7 @@ El texto hablado suma unas 1325 palabras: unos 8.8 minutos a ritmo normal, más 
 ### Lámina 5: Observación 2
 
 **Hacer:**
+- Señalar en la captura el aviso verde «Closed (Fixed)».
 - Señalar la fila «otro-usuario.pythonanywhere.com» de la tabla: pasa de Sí a No.
 
 **Xavier dice** (unos 40 s):

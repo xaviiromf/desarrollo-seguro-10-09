@@ -128,6 +128,12 @@ function ruleCard(s, rows, name) {
     { text: v, options: { breakLine: i < rows.length - 1, paraSpaceAfter: 6 } },
   ]), { x: MX + 0.3, y: 1.65, w: 4.0, h: 2.65, fontSize: 14, objectName: name + "-datos" });
 }
+function shotCard(slide, img, ratio, lines, name) {
+  const w = 4.6, h = w * ratio;
+  slide.addImage({ path: __dirname + "/img/" + img, x: MX, y: 1.45, w, h, objectName: name + "-captura", altText: "Captura de SonarQube" });
+  slide.addShape(pres.shapes.RECTANGLE, { x: MX, y: 1.45, w, h, fill: { type: "none" }, line: { color: "D5E3DC", width: 0.75 }, objectName: name + "-borde" });
+  txt(slide, lines.map((l, i) => ({ text: l, options: { breakLine: i < lines.length - 1, bold: i === 0, color: i === 0 ? C.accent1 : C.text1 } })), { x: MX, y: 1.45 + h + 0.12, w, h: 0.75, fontSize: 12, objectName: name + "-pie" });
+}
 const TH = (t) => ({ text: t, options: { bold: true, color: C.background1, fill: { color: C.text2 } } });
 const TABLE = { color: C.text1, border: { type: "solid", pt: 0.75, color: "D5E3DC" }, fill: { color: C.background1 }, valign: "middle" };
 
@@ -184,14 +190,14 @@ async function build() {
     { text: k, options: { bold: true, color: C.accent1, breakLine: true, fontSize: 13 } },
     { text: v, options: { breakLine: i < ficha.length - 1, fontSize: 14, paraSpaceAfter: 6 } },
   ]), { x: MX + 0.3, y: 2.15, w: 4.4, h: 3.35, objectName: "ficha-datos" });
-  [["Quality Gate", "OK", "OK"], ["Vulnerabilidades", "0", "0"], ["Security Hotspots", "0", "0"],
-   ["Bugs", "4", "0"], ["Code smells", "11", "6"], ["Cobertura", "0 %*", "64,7 %"]].forEach(([lbl, a, b], i) => {
-    const col = i % 3, row = Math.floor(i / 3);
-    const x = 5.95 + col * 2.3, y = 1.45 + row * 2.1, w = 2.1, h = 1.95;
+  const RW = 6.78, RH = RW * 428 / 1120;
+  s.addImage({ path: __dirname + "/img/sonar_resumen.png", x: 5.95, y: 1.45, w: RW, h: RH, objectName: "captura-resumen", altText: "Captura del panel de SonarQube" });
+  txt(s, "Captura de SonarQube, revisión final (20-10-2026). Abajo: valor inicial → final.", { x: 5.95, y: 1.45 + RH + 0.06, w: RW, h: 0.25, fontSize: 10, italic: true, color: C.accent6, objectName: "captura-resumen-pie" });
+  [["Bugs", "4 → 0"], ["Code smells", "11 → 6"], ["Cobertura", "0* → 64,7 %"]].forEach(([lbl, v], i) => {
+    const x = 5.95 + i * 2.31, y = 4.5, w = 2.16, h = 1.1;
     card(s, x, y, w, h, "FFFFFF", "metrica-" + i);
-    txt(s, lbl + " (final)", { x: x + 0.2, y: y + 0.2, w: w - 0.4, h: 0.35, fontSize: 13, bold: true, color: C.accent6, objectName: "metrica-label-" + i });
-    txt(s, b, { x: x + 0.2, y: y + 0.6, w: w - 0.4, h: 0.75, fontSize: 32, bold: true, color: C.accent1, valign: "middle", objectName: "metrica-valor-" + i });
-    txt(s, "Inicial: " + a, { x: x + 0.2, y: y + 1.45, w: w - 0.4, h: 0.3, fontSize: 12, color: C.accent6, objectName: "metrica-nota-" + i });
+    txt(s, lbl, { x: x + 0.15, y: y + 0.12, w: w - 0.3, h: 0.3, fontSize: 11, bold: true, color: C.accent6, objectName: "metrica-label-" + i });
+    txt(s, v, { x: x + 0.15, y: y + 0.45, w: w - 0.3, h: 0.55, fontSize: 20, bold: true, color: C.accent1, valign: "middle", objectName: "metrica-valor-" + i });
   });
   card(s, MX, 5.8, CW, 0.75, "FBF1E2", "limites");
   icon(s, "warn", MX + 0.2, 5.9, 0.55, C.accent2, "limites");
@@ -200,11 +206,7 @@ async function build() {
 
   // ===================== 4. Observación 1 =====================
   s = contentSlide("Análisis del código", "Observación 1: una búsqueda de texto que podía volverse lenta");
-  ruleCard(s, [
-    ["Regla", "javascript:S8786 · Regular expressions should not cause non-linear backtracking"],
-    ["Tipo y severidad en nuestra instalación", "Code Smell · Major (Reliability: Medium)"],
-    ["Archivo y origen", "static/shopping/js/calculator.js:14 · SonarQube"],
-  ], "ficha1");
+  shotCard(s, "sonar_s8786.png", 414 / 915, ["javascript:S8786 · Major (Reliability: Medium)", "Code Smell · calculator.js:14 · origen: SonarQube"], "ficha1");
   codeBox(s, 5.45, 1.45, 7.28, 1.35, "Antes", ".toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, \".\")", "bad", "antes1");
   codeBox(s, 5.45, 3.05, 7.28, 1.35, "Después · 19-10-2026", "new Intl.NumberFormat('es-CL').format(Math.round(amount))", "good", "despues1");
   threeCards(s, [["Qué ocurre", "Para mostrar el subtotal con puntos de miles ($12.990) se usaba un patrón de texto (regex) que, con textos muy largos, puede tardar demasiado."],
@@ -214,11 +216,7 @@ async function build() {
 
   // ===================== 5. Observación 2 =====================
   s = contentSlide("Análisis del código", "Observación 2: un texto repetido que escondía un riesgo");
-  ruleCard(s, [
-    ["Regla", "python:S1192 · String literals should not be duplicated"],
-    ["Tipo y severidad en nuestra instalación", "Code Smell · Critical (Maintainability: High)"],
-    ["Archivo y origen", "supermarket_project/settings.py:38 · SonarQube + revisión manual"],
-  ], "ficha2");
+  shotCard(s, "sonar_s1192.png", 414 / 915, ["python:S1192 · Critical (Maintainability: High)", "Code Smell · settings.py:38 · SonarQube + revisión manual"], "ficha2");
   txt(s, "¿La aplicación acepta este dominio? (configuración real, clave ficticia)", { x: 5.45, y: 1.45, w: 7.28, h: 0.35, fontSize: 14, bold: true, color: C.text2, objectName: "hosts-titulo" });
   s.addTable([
     [TH("Host"), TH("Antes"), TH("Después")],
