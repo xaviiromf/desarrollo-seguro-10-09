@@ -137,7 +137,7 @@ async function build() {
   s.addShape(pres.shapes.OVAL, { x: 9.55, y: 2.0, w: 3.2, h: 3.2, fill: { color: C.accent1 }, line: { type: "none" }, objectName: "escudo-circulo" });
   s.addImage({ data: ICONS.shield, x: 10.35, y: 2.8, w: 1.6, h: 1.6, objectName: "escudo-icono", altText: "Escudo" });
   s.addNotes(`[XAVIER · 10 s]
-Buenos días. Somos Xavier Romero y Alejandro Figueroa. Vamos a presentar la revisión de seguridad de nuestro CRUD de listas de compras, publicado en PythonAnywhere. Yo voy a cubrir SonarQube, OWASP, la validación en el servidor y la trazabilidad; Alejandro cubre dependencias, despliegue, la limitación de PythonAnywhere y el caso ético.`);
+Buenos días. Somos Xavier Romero y Alejandro Figueroa y presentamos la revisión de seguridad de nuestro CRUD de listas de compras, publicado en PythonAnywhere. Yo cubro el análisis y la validación; Alejandro, dependencias, despliegue y ética.`);
 
   // ===================== 2. Contexto =====================
   pres.addSection({ title: "Análisis del código" });
@@ -158,10 +158,8 @@ Buenos días. Somos Xavier Romero y Alejandro Figueroa. Vamos a presentar la rev
     txt(s, [{ text: n, options: { bold: true, breakLine: true, fontSize: 16, color: C.text2 } }, { text: r, options: { fontSize: 14 } }], { x: x + 1.1, y: y + 0.18, w: 4.6, h: 0.75, objectName: "equipo-texto-" + i });
   });
   txt(s, "Fuera de alcance: sesiones y cookies, protección de datos por industria y análisis de amenazas en profundidad (siguiente parte de la unidad).", { x: MX, y: 5.95, w: CW, h: 0.5, fontSize: 14, italic: true, color: C.accent6, objectName: "fuera-alcance" });
-  s.addNotes(`[XAVIER · 35 s]
-Nuestro sistema es un CRUD de listas de compras: cada usuario crea listas y les agrega productos con cantidad y precio en pesos chilenos. Está en PythonAnywhere con Django 6.1.
-Para esta revisión elegimos una sola operación: agregar y editar un producto, que pasa por el formulario ShoppingItemForm. Revisamos dos campos con reglas distintas: la cantidad, que es un número obligatorio con rango, y el precio unitario, que es opcional y tiene la opción "sin precio".
-Todo el trabajo se hizo en una copia local, con datos ficticios y en una rama separada llamada evaluacion-u2, para que cada cambio quede trazable.`);
+  s.addNotes(`[XAVIER · 25 s]
+Es un CRUD de listas de compras: cada usuario crea listas y les agrega productos con cantidad y precio en pesos. Elegimos una operación, agregar y editar un producto, con dos campos de reglas distintas: la cantidad, obligatoria y con rango, y el precio, opcional y con la opción "sin precio". Trabajamos en una copia local, con datos ficticios y en una rama separada, para que cada cambio quede trazable.`);
 
   // ===================== 3. SonarQube resumen =====================
   s = contentSlide("Análisis del código", "SonarQube: lo que midió y lo que no");
@@ -190,12 +188,11 @@ Todo el trabajo se hizo en una copia local, con datos ficticios y en una rama se
   card(s, MX, 5.8, CW, 0.75, "FBF1E2", "limites");
   icon(s, "warn", MX + 0.2, 5.9, 0.55, C.accent2, "limites");
   txt(s, "Límites: con 0 vulnerabilidades, SonarQube no detectó la SECRET_KEY débil ni la falta de rango en la cantidad; ambas salieron de revisión manual. *Cobertura 0 % inicial: el informe no estaba importado, no significa que faltaran pruebas.", { x: MX + 0.95, y: 5.86, w: CW - 1.15, h: 0.65, fontSize: 13, valign: "middle", objectName: "limites-texto" });
-  s.addNotes(`[XAVIER · 50 s]
-Analizamos el proyecto con SonarQube Community Build 26.9, instalado localmente. El primer análisis fue el 15 de octubre sobre la rama main; el final, el 20 de octubre sobre nuestra rama. Solo excluimos carpetas técnicas: el entorno virtual, dependencias, cachés y archivos generados. No excluimos código de la aplicación.
-El Quality Gate aprobó en ambos análisis y no hubo vulnerabilidades ni hotspots. Corregimos los 4 bugs y quedan 6 code smells de mantenibilidad que dejamos como mejora pendiente, porque no afectan la seguridad.
-Pero un Quality Gate aprobado no significa que la aplicación sea segura: SonarQube no detectó que la clave secreta de producción era débil ni que la cantidad aceptaba cero. Esos dos hallazgos los encontramos con revisión manual.
-Sobre la cobertura: el 0 % del primer análisis es porque no habíamos importado el informe de coverage, no porque no hubiera pruebas. Ahora, con el informe importado, SonarQube mide 64,7 %.
-Fuente: tablero local http://localhost:9000/dashboard?id=desarrollo-seguro-django, capturas en evidencia/capturas y JSON de la API en evidencia/sonarqube.`);
+  s.addNotes(`[XAVIER · 40 s]
+Usamos SonarQube Community Build 26.9 local. El primer análisis fue el 15 de octubre sobre main y el final el 20, sobre nuestra rama. Solo excluimos carpetas técnicas, como el entorno virtual y archivos generados; nunca código de la app.
+El Quality Gate aprobó en ambos y no hubo vulnerabilidades ni hotspots. Pero eso no significa que la app sea segura: SonarQube no detectó la clave secreta débil ni que la cantidad aceptaba cero; eso salió de la revisión manual. Y el 0 % de cobertura inicial era porque no habíamos importado el informe, no porque faltaran pruebas.
+
+Fuente (no leer): http://localhost:9000/dashboard?id=desarrollo-seguro-django · capturas en evidencia/capturas · JSON en evidencia/sonarqube`);
 
   // ===================== 4. Observación 1 =====================
   s = contentSlide("Análisis del código", "Observación 1: regex con backtracking en el formato CLP");
@@ -209,10 +206,8 @@ Fuente: tablero local http://localhost:9000/dashboard?id=desarrollo-seguro-djang
   threeCards(s, [["Qué ocurre", "El subtotal se formatea en el navegador con una regex de búsqueda anticipada anidada."],
     ["Consecuencia real", "Baja: solo recibe dígitos de Math.round() en el navegador del propio usuario. Es calidad, no una vulnerabilidad explotable."],
     ["Decisión: corregir", "Formato nativo es-CL. Misma salida verificada con 6 montos, de $0 a $9.999.999.000."]], "obs1");
-  s.addNotes(`[XAVIER · 40 s]
-La primera observación es la regla S8786 de JavaScript: SonarQube marca una expresión regular que puede tardar de forma no lineal por backtracking, lo que en otros contextos se asocia a denegación de servicio por regex.
-En nuestro código esa regex pone los puntos de miles al subtotal en el navegador. Hicimos la revisión de contexto: la entrada son solo dígitos que salen de Math.round, y se ejecuta en el navegador del mismo usuario. Por eso la tratamos como un problema de calidad y no como una vulnerabilidad. SonarQube mismo la clasifica como Code Smell.
-Igual decidimos corregirla porque el arreglo era simple: usamos Intl.NumberFormat con formato chileno y verificamos que entregue exactamente la misma salida con seis montos distintos. Commit cbab41a. En SonarQube el issue aparece como "Closed (Fixed)".`);
+  s.addNotes(`[XAVIER · 35 s]
+Primera observación: la regla S8786, una regex que puede tardar de forma no lineal por backtracking. En nuestro caso formatea el subtotal en el navegador. Revisamos el contexto: solo recibe dígitos de Math.round y corre en el navegador del propio usuario, así que es un problema de calidad, no una vulnerabilidad; SonarQube también la clasifica como code smell. Igual la corregimos porque era simple: usamos el formato nativo chileno y verificamos la misma salida con seis montos.`);
 
   // ===================== 5. Observación 2 =====================
   s = contentSlide("Análisis del código", "Observación 2: un literal repetido que ocultaba un comodín");
@@ -232,11 +227,9 @@ Igual decidimos corregirla porque el arreglo era simple: usamos Intl.NumberForma
   threeCards(s, [["Qué ocurre", "settings.py agregaba siempre el comodín *.pythonanywhere.com a ALLOWED_HOSTS y a los orígenes CSRF."],
     ["Consecuencia", "Confiaba en las apps de cualquier usuario de PythonAnywhere y ocultaba dos errores del .env: dominio ausente y el typo «ActividadDango1»."],
     ["Decisión: corregir", "Commit 11f11d0: solo los dominios declarados en el .env y SECRET_KEY obligatoria."]], "obs2");
-  s.addNotes(`[XAVIER · 50 s]
-La segunda observación parece menor: la regla S1192 avisa que el texto "https://*.pythonanywhere.com" está repetido tres veces en settings.py. Es mantenibilidad, severidad crítica en nuestra instalación.
-Pero al revisarla manualmente vimos lo que había detrás: el código agregaba siempre un comodín para todos los subdominios de pythonanywhere.com, tanto en ALLOWED_HOSTS como en los orígenes de confianza CSRF. Eso significa confiar en las aplicaciones de cualquier otro usuario de la plataforma.
-Lo comprobamos cargando la configuración con los mismos valores del .env de producción y una clave ficticia: antes aceptaba "otro-usuario.pythonanywhere.com"; después, no. Y el comodín estaba ocultando dos errores reales del .env de producción: nuestro dominio no estaba declarado y el origen CSRF tenía un error de tipeo, "ActividadDango1" sin la jota.
-Decidimos corregir: ahora solo se aceptan los dominios declarados. Aquí aclaramos el origen: la alerta es de SonarQube, pero la conclusión de seguridad es de nuestra revisión manual.`);
+  s.addNotes(`[XAVIER · 40 s]
+La segunda parece menor: un literal repetido tres veces en settings.py. Pero al revisarlo vimos que el código agregaba siempre un comodín para todos los subdominios de pythonanywhere.com, en los hosts permitidos y en los orígenes CSRF. Es decir, confiaba en las apps de cualquier otro usuario.
+Lo comprobamos con la configuración de producción: antes aceptaba "otro-usuario.pythonanywhere.com"; después, no. Además, el comodín ocultaba dos errores del .env: faltaba nuestro dominio y el origen CSRF tenía un typo. La alerta es de SonarQube; la conclusión de seguridad es de nuestra revisión manual.`);
 
   // ===================== 6. OWASP =====================
   s = contentSlide("Análisis del código", "Dos relaciones fundamentadas con OWASP Top 10:2025");
@@ -257,12 +250,10 @@ Decidimos corregir: ahora solo se aceptan los dominios declarados. Aquí aclaram
   });
   txt(s, "No relacionamos A05 Inyección: el CRUD usa el ORM de Django sin SQL crudo, y un dato fuera de rango no demuestra una inyección.", { x: MX, y: 5.9, w: CW, h: 0.5, fontSize: 14, italic: true, color: C.accent6, objectName: "nota-a05" });
   source(s, "Fuentes: top10.owasp.org/2025/A02_2025-Security_Misconfiguration/ · top10.owasp.org/2025/A06_2025-Insecure_Design/ (consultado 19-10-2026)");
-  s.addNotes(`[XAVIER · 40 s]
-Relacionamos dos observaciones reales con dos categorías distintas del OWASP Top 10 2025.
-Primero A02, configuración de seguridad incorrecta: el comodín de hosts que acabamos de ver y la clave secreta de producción, que Django marcaba como débil con el aviso W009 y que además era la misma que estaba en el archivo .env.example del repositorio desde el 24 de septiembre. Nunca mostramos su valor; lo comparamos por hash.
-Segundo A06, diseño inseguro: no había una regla definida para la cantidad, entonces no había control. El servidor aceptaba cero o casi mil millones de unidades; el mínimo solo estaba en el HTML.
-No usamos A05 Inyección porque el proyecto usa el ORM de Django y no tenemos evidencia que lo sostenga.
-Fuentes: https://top10.owasp.org/2025/A02_2025-Security_Misconfiguration/ y https://top10.owasp.org/2025/A06_2025-Insecure_Design/ (consultadas el 19-10-2026).`);
+  s.addNotes(`[XAVIER · 30 s]
+Con OWASP 2025 hicimos dos relaciones. A02, configuración incorrecta: el comodín y la clave de producción, que Django marcaba como débil y que era la misma del archivo de ejemplo del repositorio; la comparamos por hash, sin mostrarla. A06, diseño inseguro: no había una regla definida para la cantidad, así que no había control. No usamos A05, inyección, porque usamos el ORM y no tenemos evidencia que la sostenga.
+
+Fuentes (no leer): https://top10.owasp.org/2025/A02_2025-Security_Misconfiguration/ · https://top10.owasp.org/2025/A06_2025-Insecure_Design/ (consultadas 19-10-2026)`);
 
   // ===================== 7. Reglas =====================
   pres.addSection({ title: "Validación y evidencia" });
@@ -277,18 +268,19 @@ Fuentes: https://top10.owasp.org/2025/A02_2025-Security_Misconfiguration/ y http
     [rule("Dónde se valida"), { text: "Validadores del modelo (control nuevo)", options: { bold: true, color: C.accent1 } }, "PositiveIntegerField + ShoppingItemForm.clean() (control existente)"],
   ], Object.assign({ x: MX, y: 1.45, w: CW, colW: [2.8, 3.55, 5.78], fontSize: 14, rowH: 0.5, objectName: "tabla-reglas" }, TABLE));
   [["globe", "Navegador", "min y max en HTML: solo comodidad, se pueden saltar"],
-   ["clip", "ModelForm.is_valid()", "full_clean() ejecuta los validadores del modelo en el servidor"],
-   ["db", "Vista", "form_valid() guarda; form_invalid() no guarda y muestra el error"]].forEach(([ic, h, b], i) => {
+   ["clip", "ModelForm.is_valid()", "full_clean() ejecuta los validadores del modelo (shopping/models.py:163)"],
+   ["db", "Vista", "form_valid() guarda; form_invalid() no guarda (shopping/views.py:324 y 335)"]].forEach(([ic, h, b], i) => {
     const x = MX + i * 4.15, y = 4.95;
     card(s, x, y, 3.65, 1.4, i ? "FFFFFF" : "F7E9E5", "flujo-" + i);
     icon(s, ic, x + 0.2, y + 0.25, 0.6, i ? C.accent1 : C.accent3, "flujo-icono-" + i);
     txt(s, [{ text: h, options: { bold: true, fontSize: 15, color: C.text2, breakLine: true } }, { text: b, options: { fontSize: 13 } }], { x: x + 0.95, y: y + 0.2, w: 2.55, h: 1.1, objectName: "flujo-texto-" + i });
     if (i < 2) s.addShape(pres.shapes.RIGHT_ARROW, { x: x + 3.72, y: y + 0.5, w: 0.36, h: 0.4, fill: { color: C.accent6 }, line: { type: "none" }, objectName: "flecha-" + i });
   });
-  s.addNotes(`[XAVIER · 35 s]
-Este es el contrato de entrada de los dos campos. La cantidad es obligatoria, entera, de 1 a 999 con ambos límites incluidos. El precio es opcional, entero y mayor o igual a cero; si viene vacío o en cero, la app lo registra como "Sin precio", que es una regla de negocio que ya existía.
-Abajo se ve dónde se valida realmente. El min y max del HTML solo ayudan al usuario y se pueden saltar. La validación real ocurre en el servidor: al llamar is_valid, el ModelForm ejecuta full_clean y con eso los validadores del modelo. La vista solo guarda en form_valid; si el formulario es inválido, no guarda y muestra el error.
-Fuente: https://docs.djangoproject.com/en/6.1/ref/forms/validation/`);
+  s.addNotes(`[XAVIER · 30 s]
+Este es el contrato de entrada. La cantidad es obligatoria, entera, de 1 a 999. El precio es opcional, entero y mayor o igual a cero; vacío o cero se registra como "sin precio".
+Abajo, dónde se valida: el HTML solo ayuda al usuario. La validación real ocurre en el servidor, cuando is_valid ejecuta los validadores del modelo. La vista solo guarda en form_valid; si el formulario es inválido, no guarda y muestra el error.
+
+Fuente (no leer): https://docs.djangoproject.com/en/6.1/ref/forms/validation/`);
 
   // ===================== 8. Mejora =====================
   s = contentSlide("Validación y evidencia", "La mejora: antes y después del control");
@@ -303,10 +295,10 @@ Fuente: https://docs.djangoproject.com/en/6.1/ref/forms/validation/`);
     icon(s, ic, x + 0.2, y + 0.25, 0.6, C.accent1, "efecto-icono-" + i);
     txt(s, [{ text: h, options: { bold: true, fontSize: 15, color: C.text2, breakLine: true } }, { text: b, options: { fontSize: 13 } }], { x: x + 0.95, y: y + 0.2, w: 2.75, h: 1.3, objectName: "efecto-texto-" + i });
   });
-  s.addNotes(`[XAVIER · 35 s]
-Esta es la mejora. A la izquierda, el código original: un PositiveIntegerField, que en Django acepta el cero y no tiene máximo. A la derecha, el control nuevo: dos validadores, MinValueValidator con 1 y MaxValueValidator con 999, definidos como constantes.
-Lo pusimos en el modelo y no solo en el formulario por una razón: así el mismo control se aplica al crear, al editar y en el panel de administración. La migración que genera no cambia la base de datos, lo verificamos con sqlmigrate, y revisamos que en producción ninguno de los 15 productos guardados estuviera fuera de rango. Además la vista de agregar ahora le dice al usuario qué campo falló.
-Fuente: https://docs.djangoproject.com/en/6.1/ref/validators/`);
+  s.addNotes(`[XAVIER · 25 s]
+La mejora: antes, un PositiveIntegerField, que acepta cero y no tiene máximo. Después, dos validadores, mínimo 1 y máximo 999. Lo pusimos en el modelo para que aplique al crear, al editar y en el admin. La migración no cambia la base, y en producción ninguno de los 15 productos guardados quedaba fuera de rango.
+
+Fuente (no leer): https://docs.djangoproject.com/en/6.1/ref/validators/`);
 
   // ===================== 9. Casos =====================
   s = contentSlide("Validación y evidencia", "Casos ejecutados: resultado antes y después");
@@ -333,12 +325,13 @@ Fuente: https://docs.djangoproject.com/en/6.1/ref/validators/`);
     txt(s, l, { x: 9.85, y: y + 0.82, w: 2.7, h: 0.55, fontSize: 12, objectName: "stat-l-" + i });
   });
   source(s, "Pruebas Django (TestCase y cliente de pruebas): no pasan por el navegador. Evidencia: evidencia/tests/01 y 02, y evidencia/configuracion/08 (prueba en vivo)");
-  s.addNotes(`[XAVIER · 50 s + demo 20 s]
-Ejecutamos los casos como pruebas automáticas de Django, así que no dependen de las restricciones del navegador. Para la cantidad probamos un valor dentro del rango, el cero, los dos límites exactos y el mil. Para el precio, un valor legítimo, un negativo, un texto y el cero como frontera. Y dos pruebas que hacen POST directo a las vistas de crear y editar.
-Primero escribimos las pruebas y las corrimos contra el código original: cuatro de trece fallaron, porque el servidor aceptó el cero, el mil y llegó a guardar el producto. Ese es nuestro "antes" real. Después del control, pasan las trece. La suite completa, de 25 pruebas, pasa en local y en una réplica de producción. Y después de desplegar, lo probamos en vivo en PythonAnywhere con un usuario ficticio que borramos al terminar: la cantidad cero se rechaza y la cantidad cinco se acepta.
-DEMO (terminal, en la raíz del proyecto con el venv activo):
+  s.addNotes(`[XAVIER · 40 s + demo 20 s]
+Los casos son pruebas automáticas de Django, sin navegador. Para la cantidad: un valor normal, el cero, los límites 1 y 999, y el mil. Para el precio: un valor legítimo, un negativo, un texto y el cero. Y dos POST directos a las vistas.
+Primero corrimos las pruebas contra el código original: fallaron 4 de 13, porque el servidor guardó un producto con cantidad cero. Ese es nuestro antes real. Después del control pasan las 13, y la suite completa, 25 de 25. Les muestro una.
+
+DEMO (terminal en la raíz del proyecto, venv activo):
 python manage.py test shopping.tests.ShoppingItemValidationTests.test_backend_crear_con_cantidad_cero_no_guarda -v 2
-Resultado esperado: "ok". Esta prueba envía cantidad 0 directo a la vista y comprueba que no se guarda nada.`);
+Primero aparecen líneas "Applying..." de la base de prueba; al final debe decir "... ok" y "OK". Decir: "envía cantidad 0 directo a la vista y comprueba que no se guarda nada".`);
 
   // ===================== 10. Trazabilidad =====================
   s = contentSlide("Validación y evidencia", "Trazabilidad del control e ISO/IEC 27034");
@@ -364,10 +357,11 @@ Resultado esperado: "ok". Esta prueba envía cantidad 0 directo a la vista y com
     txt(s, b, { x: x + 0.2, y: y + 0.95, w: w - 0.4, h: 0.95, fontSize: 13, objectName: "iso-texto-" + i });
   });
   source(s, "Aplicamos el enfoque de ISO/IEC 27034-1:2011 (confirmada en 2022); no implica certificación. Fuente: iso.org/standard/44378.html (consultado 19-10-2026)");
-  s.addNotes(`[XAVIER · 40 s]
-Esta es la cadena completa del control. El requisito, la regla de 1 a 999, quedó definido en el contrato de las pruebas. Las pruebas se escribieron antes del control y fallaron con el código original: eso quedó en el commit feed220 y en el archivo de evidencia. Después implementamos el control, commit 1ae5774, lo verificamos en dos entornos y, tras desplegarlo, en vivo en producción. Todo quedó en commits con fecha y en la carpeta de evidencia.
-Lo relacionamos con ISO/IEC 27034 así: el marco de la organización, ONF, son las reglas que adoptamos, como OWASP y el checklist de Django; el marco de esta aplicación, ANF, es el contrato de entradas; el control de seguridad, ASC, es el validador junto con su forma de verificarlo, que son las pruebas; y el proceso, ASMP, es esta cadena que deja evidencia auditable. Aplicamos el enfoque de la norma; no decimos que el proyecto esté certificado.
-Fuente: https://www.iso.org/standard/44378.html (ISO/IEC 27034-1:2011, confirmada en 2022).`);
+  s.addNotes(`[XAVIER · 35 s]
+Esta es la trazabilidad: el requisito quedó definido en las pruebas, las pruebas fallaron antes del control, el control se implementó en un commit propio y se verificó en local, en una réplica de producción y en vivo. Todo con fecha y evidencia.
+Con ISO 27034 lo relacionamos así: el ONF son las reglas que adoptamos; el ANF, el contrato de esta app; el ASC, el validador junto con sus pruebas; y el ASMP, este proceso que deja evidencia. Aplicamos su enfoque; no decimos que el proyecto esté certificado.
+
+Fuente (no leer): https://www.iso.org/standard/44378.html (ISO/IEC 27034-1:2011, confirmada en 2022)`);
 
   // ===================== 11. Dependencias =====================
   pres.addSection({ title: "Dependencias y despliegue" });
@@ -386,19 +380,17 @@ Fuente: https://www.iso.org/standard/44378.html (ISO/IEC 27034-1:2011, confirmad
   icon(s, "link", MX + 0.2, 5.67, 0.6, C.accent2, "a03");
   txt(s, "«Django>=5.0.0» permitió que local y producción usaran series distintas (A03:2025 Software Supply Chain Failures). Ahora requirements.txt fija versiones exactas (commit f29535c). pip check: sin conflictos en ambos entornos.", { x: MX + 1.0, y: 5.6, w: CW - 1.2, h: 0.8, fontSize: 14, valign: "middle", objectName: "a03-texto" });
   source(s, "Fuentes: djangoproject.com/download y /weblog/2026/oct/06 · devguide.python.org/versions · PyPI django-environ y django-tailwind (consultado 19-10-2026)");
-  s.addNotes(`[ALEJANDRO · 40 s]
-Revisamos Python y tres dependencias en los dos entornos, con python --version, django --version, pip list y pip check.
-En Python, producción usa 3.12.8; la serie 3.12 tiene soporte de seguridad hasta octubre de 2028, pero ya hay siete parches más nuevos.
-Django es el hallazgo principal: producción tenía 6.1.1 y local 5.2.17, series distintas. El 6 de octubre salió 6.1.2, que corrige cuatro CVE. Antes de actualizar revisamos las notas de seguridad, que fuera la misma serie y que pasaran las 25 pruebas con 6.1.2. Recién entonces actualizamos los dos entornos, el 20 de octubre.
-django-environ está en su última versión, sin avisos de seguridad; la mantenemos, pero su página aún no declara soporte para Django 6.1, así que hay que vigilarlo.
-django-tailwind: el requirements fijaba 4.2.0 pero producción tenía 4.5.0. Fijamos 4.5.0 en ambos entornos y no saltamos a 4.6.0 sin revisar sus cambios incompatibles.
-La causa de fondo era que requirements usaba "mayor o igual", y eso lo relacionamos con A03, fallas en la cadena de suministro. Ahora las versiones están fijadas.
-Fuentes (consultadas el 19-10-2026):
+  s.addNotes(`[ALEJANDRO · 45 s]
+Revisamos Python y tres dependencias en los dos entornos. Producción usa Python 3.12, con soporte de seguridad hasta 2028.
+En Django encontramos dos cosas: local y producción usaban series distintas, y producción tenía 6.1.1, cuando la 6.1.2 corrige cuatro CVE. Antes de actualizar revisamos las notas, que fuera la misma serie y que pasaran las 25 pruebas; recién ahí actualizamos ambos entornos.
+django-environ está al día y sin avisos. En django-tailwind, el requirements no coincidía con producción; fijamos la 4.5.0. La causa era usar "mayor o igual" en requirements, que relacionamos con A03.
+
+Fuentes (no leer, consultadas 19-10-2026):
 https://www.djangoproject.com/download/
 https://www.djangoproject.com/weblog/2026/oct/06/security-releases/
 https://devguide.python.org/versions/
 https://pypi.org/project/django-environ/
-https://pypi.org/project/django-tailwind/ y https://github.com/timonweb/django-tailwind/blob/master/CHANGELOG.md`);
+https://pypi.org/project/django-tailwind/`);
 
   // ===================== 12. Recomendaciones =====================
   s = contentSlide("Dependencias y despliegue", "Dos recomendaciones priorizadas para PythonAnywhere");
@@ -425,10 +417,10 @@ https://pypi.org/project/django-tailwind/ y https://github.com/timonweb/django-t
   });
   source(s, "Fuente: docs.djangoproject.com/en/6.1/howto/deployment/checklist/ (consultado 19-10-2026). Evidencia: evidencia/configuracion/00 a 08. Ningún secreto aparece en láminas ni evidencias.");
   s.addNotes(`[ALEJANDRO · 40 s]
-Revisamos DEBUG, ALLOWED_HOSTS y los secretos de producción. DEBUG está en False, eso está bien.
-Prioridad uno: rotar la clave secreta. El chequeo de despliegue de Django la marcaba como débil con el aviso W009, y además era la misma clave que quedó en el archivo de ejemplo del repositorio. Lo verificamos comparando hashes, sin mostrar el valor. La acción fue generar una clave nueva con la función de Django y guardarla solo en el .env del servidor; lo aplicamos el 20 de octubre y el aviso W009 desapareció. El costo es que se cierran las sesiones abiertas, que es aceptable.
-Prioridad dos: declarar el dominio exacto. El .env de producción no tenía nuestro dominio en ALLOWED_HOSTS y el origen CSRF tenía un error de tipeo; funcionaba solo por el comodín que ya eliminamos del código. Por eso el orden importó: primero corregimos el .env y después desplegamos la rama; si no, el sitio habría dado Error 400. De paso activamos Force HTTPS en PythonAnywhere y verificamos el login en vivo.
-Fuente: https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/`);
+En producción, DEBUG estaba bien. Prioridad uno: rotar la clave secreta, porque Django la marcaba como débil y estaba en el repositorio. Generamos una nueva solo en el servidor; el aviso desapareció y el costo fue cerrar las sesiones abiertas.
+Prioridad dos: declarar el dominio exacto. El .env no tenía nuestro dominio y el origen CSRF tenía un typo; funcionaba solo por el comodín. Por eso primero corregimos el .env y después desplegamos, o el sitio daba error 400. También activamos HTTPS forzado y verificamos el login en vivo.
+
+Fuente (no leer): https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/`);
 
   // ===================== 13. Limitación PA =====================
   s = contentSlide("Dependencias y despliegue", "Limitación del plan gratuito: la app vence en un mes");
@@ -446,13 +438,9 @@ Fuente: https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/`);
   });
   source(s, "Es una restricción del plan, no una falla de seguridad. Fuentes: help.pythonanywhere.com/pages/FreeAccountsFeatures/ · blog.pythonanywhere.com/221/ (consultado 19-10-2026)");
   s.addNotes(`[ALEJANDRO · 30 s]
-Nuestra cuenta de PythonAnywhere es gratuita y se creó hace unas tres semanas. Según la documentación actual, en las cuentas gratuitas la aplicación web vence al mes y hay que renovarla con el botón "Run until 1 month from today". Si nadie lo hace, el sitio queda deshabilitado y el CRUD deja de estar disponible, aunque el código esté bien.
-Además, como la cuenta es posterior al 15 de enero de 2026, no tiene MySQL ni tareas programadas, así que usamos SQLite. Hay otros límites, como 100 segundos de CPU al día y 512 MiB de disco.
-Esto es una restricción del plan, no una falla de seguridad. Nuestra app vencía el 24 de octubre, dos días después de esta presentación; la renovamos el 20 y ahora vence el 21 de noviembre. Hay que repetirlo cada mes y respaldar la base.
-Fuentes (consultadas el 19-10-2026):
-https://help.pythonanywhere.com/pages/FreeAccountsFeatures/
-https://blog.pythonanywhere.com/221/
-https://www.pythonanywhere.com/pricing/`);
+La limitación del plan gratuito: la web app vence al mes si nadie la renueva, y entonces el CRUD deja de estar disponible aunque el código esté bien. Nuestra app vencía el 24 de octubre; la renovamos y ahora vence el 21 de noviembre. Además, por la fecha de la cuenta, no tenemos MySQL y usamos SQLite. Es una restricción del plan, no una falla de seguridad.
+
+Fuentes (no leer): https://help.pythonanywhere.com/pages/FreeAccountsFeatures/ · https://blog.pythonanywhere.com/221/`);
 
   // ===================== 14. Ética =====================
   pres.addSection({ title: "Ética y cierre" });
@@ -476,11 +464,9 @@ https://www.pythonanywhere.com/pricing/`);
     { text: "Afiche en el README del repositorio y charla de 10 minutos al curso en la próxima clase. Antes de cada push: 1) revisar que el diff no tenga secretos; 2) ejecutar check --deploy; 3) pruebas en verde; 4) .env fuera de git.", options: { fontSize: 14, color: C.background1 } },
   ], { x: MX + 1.45, y: 5.0, w: CW - 1.7, h: 1.35, valign: "middle", objectName: "concientizacion-texto" });
   s.addNotes(`[ALEJANDRO · 45 s]
-Para la parte ética separamos acciones concretas de este trabajo.
-Dos acciones éticas: primero, publicar los hallazgos reales, incluidos los errores propios; en SonarQube solo excluimos carpetas técnicas, nunca código de la aplicación. Segundo, tratar el secreto como secreto: confirmamos que la clave de producción estaba en el repositorio comparando hashes, sin mostrarla en ninguna lámina ni evidencia, y luego la rotamos.
-Dos acciones no éticas que evitamos: excluir código o inventar resultados para que el Quality Gate apruebe, y hacer pruebas contra la aplicación de otro usuario de PythonAnywhere, que el comodín nos habría facilitado, o usar datos reales de personas.
-Nuestra decisión fue probar en copia local con datos ficticios y mostrar todo. La única prueba en producción fue sobre nuestra propia app, con un usuario ficticio que borramos al terminar. Ocultar errores protege la nota, no a los usuarios.
-Como acción de concientización proponemos un checklist de cinco minutos antes de cada push: revisar que no haya secretos en el diff, ejecutar check --deploy, tener las pruebas en verde y mantener el .env fuera de git. Lo publicamos en el README y lo presentamos al curso en una charla de 10 minutos.`);
+En ética, dos acciones éticas: publicar los hallazgos reales, incluso los nuestros, sin excluir código para mejorar el resultado; y tratar el secreto como secreto: lo verificamos por hash y nunca lo mostramos.
+Dos no éticas que evitamos: inventar resultados o excluir código para aprobar, y probar contra apps de otros usuarios o con datos reales. Por eso probamos en copia local con datos ficticios; en producción solo verificamos nuestra app con un usuario ficticio que borramos.
+Como concientización proponemos un checklist de cinco minutos antes de cada push: sin secretos, check deploy, pruebas en verde y el .env fuera de git. Ya está en el README y lo presentaremos al curso.`);
 
   // ===================== 15. Conclusión =====================
   s = pres.addSlide({ masterName: "CIERRE", sectionTitle: "Ética y cierre" });
@@ -496,8 +482,8 @@ Como acción de concientización proponemos un checklist de cinco minutos antes 
     txt(s, b, { x: x + 0.3, y: y + 1.7, w: w - 0.6, h: 1.3, fontSize: 14, color: C.accent5, objectName: "cierre-texto-" + i });
   });
   txt(s, "Gracias · ¿Preguntas?", { x: MX, y: 6.15, w: CW, h: 0.6, fontSize: 24, bold: true, color: C.accent2, objectName: "gracias" });
-  s.addNotes(`[ALEJANDRO · 15 s] Como conclusión: SonarQube nos orientó, pero los tres problemas más serios los confirmamos con revisión manual. Un Quality Gate aprobado no es lo mismo que una aplicación segura.
-[XAVIER · 15 s] Y un control vale cuando se puede demostrar: definimos la regla, la probamos, la implementamos y guardamos la evidencia. Las recomendaciones ya están aplicadas en producción: clave rotada, dominio exacto, HTTPS forzado, Django 6.1.2 y la app renovada. Queda como mejora pendiente reducir seis alertas de mantenibilidad. Muchas gracias, quedamos atentos a sus preguntas.`);
+  s.addNotes(`[ALEJANDRO · 10 s] SonarQube nos orientó, pero los problemas más serios los confirmamos con revisión manual: aprobar el Quality Gate no basta.
+[XAVIER · 15 s] Y un control vale si se puede demostrar: regla, prueba, control y evidencia. Las recomendaciones ya están aplicadas en producción y queda como mejora pendiente reducir seis alertas de mantenibilidad. Gracias, quedamos atentos a sus preguntas.`);
 
   // ===================== 16. Anexo: fuentes =====================
   pres.addSection({ title: "Anexo" });

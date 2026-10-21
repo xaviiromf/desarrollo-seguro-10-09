@@ -2,27 +2,29 @@
 
 El guion completo de cada lámina está en las **notas del orador** del PPTX. Este documento resume lo que hay que memorizar.
 
-## Reparto y tiempos (objetivo: 9 a 9,5 minutos)
+## Reparto y tiempos (objetivo: 8,5 a 9 minutos)
+
+El guion de las notas suma unas 1.160 palabras. A ritmo normal (150 palabras por minuto) son unos 7,8 minutos, más 20 segundos de demostración y las transiciones.
 
 | Lámina | Tema | Expone | Tiempo |
 |---|---|---|---|
 | 1 | Portada | Xavier | 0:10 |
-| 2 | Qué revisamos y cómo | Xavier | 0:35 |
-| 3 | SonarQube: lo que midió y lo que no | Xavier | 0:50 |
-| 4 | Observación 1 (regex, S8786) | Xavier | 0:40 |
-| 5 | Observación 2 (comodín, S1192) | Xavier | 0:50 |
-| 6 | OWASP A02 y A06 | Xavier | 0:40 |
-| 7 | Contrato de entrada | Xavier | 0:35 |
-| 8 | Mejora: antes y después | Xavier | 0:35 |
-| 9 | Seis casos y demostración | Xavier | 1:10 |
-| 10 | Trazabilidad e ISO/IEC 27034 | Xavier | 0:40 |
-| 11 | Python y dependencias | Alejandro | 0:40 |
+| 2 | Qué revisamos y cómo | Xavier | 0:25 |
+| 3 | SonarQube: lo que midió y lo que no | Xavier | 0:40 |
+| 4 | Observación 1 (regex, S8786) | Xavier | 0:35 |
+| 5 | Observación 2 (comodín, S1192) | Xavier | 0:40 |
+| 6 | OWASP A02 y A06 | Xavier | 0:30 |
+| 7 | Contrato de entrada | Xavier | 0:30 |
+| 8 | Mejora: antes y después | Xavier | 0:25 |
+| 9 | Seis casos y demostración | Xavier | 1:00 |
+| 10 | Trazabilidad e ISO/IEC 27034 | Xavier | 0:35 |
+| 11 | Python y dependencias | Alejandro | 0:45 |
 | 12 | Recomendaciones de despliegue | Alejandro | 0:40 |
 | 13 | Limitación de PythonAnywhere | Alejandro | 0:30 |
 | 14 | Ética y concientización | Alejandro | 0:45 |
-| 15 | Conclusión | Alejandro y Xavier | 0:30 |
+| 15 | Conclusión | Alejandro y Xavier | 0:25 |
 
-La lámina 16 (fuentes) es un anexo y no se expone.
+**Total: unos 8:35.** La lámina 16 (fuentes) es un anexo y no se expone. Las líneas "Fuente (no leer)" de las notas no se dicen en voz alta: están ahí porque la pauta pide las fuentes en las notas.
 
 ## Las 5 frases que no pueden faltar
 
@@ -42,7 +44,7 @@ python manage.py test shopping.tests.ShoppingItemValidationTests.test_backend_cr
 
 Qué decir mientras corre: *"Esta prueba hace un POST directo a la vista de crear producto con cantidad 0. No pasa por el navegador. Comprueba que no se guarda nada y que el usuario recibe el mensaje de error."*
 
-Resultado esperado: `... ok` y `OK`.
+Primero aparecen líneas `Applying ...` de la base de prueba; es normal. Al final debe decir `... ok` y `OK`.
 
 Plan B si algo falla: mostrar `evidencia/capturas/02_despues_validacion.png`.
 
