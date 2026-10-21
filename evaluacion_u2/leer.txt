@@ -1,0 +1,131 @@
+ENTREGA EVALUACIÓN U2 - DESARROLLO SEGURO DEL CRUD DJANGO
+==========================================================
+
+Equipo:        Xavier Romero y Alejandro Figueroa
+Presentación:  22-10-2026
+Proyecto:      CRUD de listas de compras, publicado en https://actividaddjango1.pythonanywhere.com
+Rama revisada: evaluacion-u2, creada a partir de main (commit 2516b9f)
+
+
+1. QUÉ CONTIENE ESTA CARPETA
+----------------------------
+
+- Presentacion_U2_Desarrollo_Seguro.pptx
+  Nuestra presentación: 15 láminas más un anexo de fuentes. Dejamos las fuentes
+  consultadas, con su fecha, en las notas del orador de cada lámina.
+
+- Presentacion_U2_Desarrollo_Seguro.pdf
+  La misma presentación en PDF. La exportamos con LibreOffice, así que la
+  tipografía puede variar levemente.
+
+- evidencia/
+  Las salidas reales de lo que ejecutamos. Cada archivo .txt indica el comando,
+  la fecha y el entorno en que lo corrimos.
+
+
+2. DÓNDE ESTÁ LA EVIDENCIA DE CADA CRITERIO
+-------------------------------------------
+
+2.1.2 SonarQube y OWASP
+  - Analizamos el proyecto con SonarQube Community Build 26.9.0.129388.
+  - evidencia/sonarqube/antes_*.json: análisis del 15-10-2026 sobre main.
+  - evidencia/sonarqube/despues_*.json: análisis final del 20-10-2026 sobre
+    evaluacion-u2.
+  - Las capturas del panel están en evidencia/capturas/ (ver la sección 4).
+
+2.1.3 Validación en el servidor
+  - Definimos la regla en shopping/models.py (QUANTITY_MIN y QUANTITY_MAX).
+  - Las pruebas están en shopping/tests.py, clase ShoppingItemValidationTests.
+
+2.1.3 Evidencia de las pruebas
+  - evidencia/tests/01_antes_validacion.txt: corrimos las pruebas nuevas contra
+    el código original y 4 de 13 fallaron.
+  - evidencia/tests/02_despues_validacion.txt: con el control implementado,
+    pasan las 13.
+  - evidencia/tests/03 y 04: la suite completa (25 de 25) en nuestro entorno
+    local y en una réplica con las versiones de producción.
+  - evidencia/tests/05_cobertura.txt: cobertura medida con coverage.py.
+
+2.1.2 Ciclo seguro (ISO/IEC 27034)
+  - Commit feed220: definimos el requisito y escribimos las pruebas, que
+    fallaban.
+  - Commit 1ae5774: implementamos el control.
+  - El detalle está en la lámina 10.
+
+2.1.2 Dependencias
+  - evidencia/dependencias/01_pythonanywhere.txt y 02_local.txt: versiones de
+    ambos entornos.
+  - evidencia/dependencias/03 y 04: verificamos Django 6.1.2 antes de
+    actualizar, y comprobamos el entorno local después de fijar versiones.
+
+2.1.2 Despliegue
+  - evidencia/configuracion/00 a 05: SECRET_KEY de producción (nunca mostramos
+    su valor), hosts aceptados antes y después, arranque sin SECRET_KEY y
+    check --deploy.
+  - evidencia/configuracion/06 a 08: estado de PythonAnywhere antes y después
+    de aplicar las recomendaciones, y la prueba en vivo.
+
+2.1.1 Ética
+  - Lámina 14 y sus notas.
+
+
+3. COMMITS DE LA RAMA evaluacion-u2
+-----------------------------------
+
+  ced924d  Configuramos SonarQube con exclusiones técnicas.
+  feed220  Escribimos las pruebas del contrato de entrada (4 fallaban).
+  1ae5774  Implementamos el control: cantidad entre 1 y 999, validada en el
+           servidor.
+  cbab41a  Corregimos la regex de formatCLP (javascript:S8786).
+  11f11d0  Eliminamos los comodines de hosts y la SECRET_KEY por defecto.
+  d0d0ccd  Asociamos labels a los inputs (Web:InputWithoutLabelCheck).
+  f29535c  Fijamos versiones exactas en requirements.txt, con Django 6.1.2.
+  37295d1  Mostramos el subtotal en formato CLP al agregar un producto.
+  019c866  Cambiamos a Number.parseFloat (javascript:S7773).
+
+Los demás commits son de configuración de cobertura y de archivos de evidencia.
+
+
+4. CAPTURAS (evidencia/capturas/)
+---------------------------------
+
+  sonarqube_01_resumen.png
+      Quality Gate aprobado; Security, Reliability y Maintainability en A;
+      cobertura de 64,7 %.
+  sonarqube_02_actividad.png
+      Historial de análisis, del 15-10 al 20-10.
+  sonarqube_03_obs1_S8786.png
+      Observación 1, en estado Closed (Fixed).
+  sonarqube_04_obs2_S1192.png
+      Observación 2, en estado Closed (Fixed).
+  pythonanywhere_01_vencimiento_antes.png
+      La app iba a deshabilitarse el 24-10-2026.
+  pythonanywhere_02_vencimiento_renovado.png
+      La renovamos: ahora vence el 21-11-2026.
+  pythonanywhere_03_force_https.png
+      Force HTTPS activado.
+  01_antes_validacion.png, 02_despues_validacion.png,
+  01_antes_hosts.png, 03_despues_hosts_env_recomendado.png
+      Salidas de pruebas y de configuración, generadas a partir de los .txt.
+
+
+5. CAMBIOS QUE APLICAMOS EN PYTHONANYWHERE (20-10-2026)
+-------------------------------------------------------
+
+1. En el .env:
+   - Generamos una SECRET_KEY nueva, de 50 caracteres aleatorios.
+   - Dejamos ALLOWED_HOSTS=actividaddjango1.pythonanywhere.com.
+   - Dejamos CSRF_TRUSTED_ORIGINS=https://actividaddjango1.pythonanywhere.com,
+     con el typo corregido.
+2. Desplegamos la rama evaluacion-u2:
+   - Instalamos requirements.txt (Django 6.1.1 -> 6.1.2).
+   - Ejecutamos migrate y collectstatic.
+3. En la web app:
+   - Activamos Force HTTPS.
+   - Recargamos la app.
+   - La renovamos hasta el 21-11-2026.
+4. La verificamos en vivo:
+   - HTTP redirige a HTTPS.
+   - El login funciona.
+   - La cantidad 0 se rechaza y la cantidad 5 se acepta.
+   - Para la prueba usamos un usuario ficticio, que borramos al terminar.

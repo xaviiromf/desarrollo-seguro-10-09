@@ -114,3 +114,12 @@ Es concreta y medible. El checklist ya está publicado en el `README.md` del rep
 
 **¿Probaron en producción? ¿No dice la pauta que se use una copia local?**
 Las pruebas de validación se hicieron en copia local. En producción solo verificamos, después de desplegar, que nuestra propia app funcionara. Usamos un usuario ficticio que borramos al terminar y nunca tocamos datos reales ni apps de otros.
+
+## Mantenimiento (notas internas, no se entregan)
+
+- **Renovar la app cada mes:** pestaña **Web** → **Run until 1 month from today**. PythonAnywhere envía un correo de aviso una semana antes.
+- **SonarQube:** se inicia con `~/tools/start-sonarqube.sh` y se usa en http://localhost:9000.
+  - Para escanear: `SONAR_TOKEN=<token> sonar-scanner` desde la raíz del proyecto.
+  - El token usado durante la revisión ("claude code") se revocó el 20-10. Sigue vigente tu token "desarrollo-seguro-django" del 15-10; si no lo tienes guardado, crea uno nuevo en *My Account → Security*.
+- **PythonAnywhere:** el token de API usado para el despliegue se revocó el 20-10. La cuenta quedó con un token nuevo que nadie ha usado; puedes ignorarlo.
+- **Reconstruir la presentación:** el generador está en `fuente_presentacion/build.js` (requiere `pptxgenjs`).
