@@ -2,8 +2,8 @@
   {
     "titulo": "Portada",
     "hacer": [
-      "Presentación abierta en modo presentador.",
-      "Xavier habla y controla el notebook; Alejandro está a su lado."
+      "Presentación iniciada con F5 en la pantalla externa (Super + 5).",
+      "Xavier sigue el guion en la pantalla del notebook; Alejandro está a su lado."
     ],
     "partes": [
       {
@@ -124,8 +124,9 @@
     "titulo": "Casos ejecutados y demostración",
     "hacer": [
       "Señalar las filas rojas de la columna «Antes».",
-      "Al decir «se los muestro», cambiar a la terminal (Alt+Tab) y ejecutar el comando de la demostración.",
-      "Volver a la presentación cuando aparezca «OK»."
+      "Al decir «Se los muestro en vivo»: Super + 6 (terminal) y Enter.",
+      "Cuando aparezca «OK», señalarlo y volver con Super + 5; flecha derecha a la lámina 10.",
+      "Si falla: Super + 7 (captura del plan B) y luego Super + 5."
     ],
     "partes": [
       {

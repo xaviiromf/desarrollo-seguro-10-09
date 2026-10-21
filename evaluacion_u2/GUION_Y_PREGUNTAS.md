@@ -1,10 +1,12 @@
 # Guion de la presentación y preparación
 
-Lo que dice cada uno está también en las **notas del orador** del PPTX, así que se puede seguir en el modo presentador. La idea no es leerlo palabra por palabra, sino decirlo con sus propias palabras.
+Lo que dice cada uno está también en las **notas del orador** del PPTX. La idea no es leerlo palabra por palabra, sino decirlo con sus propias palabras.
 
 **Regla general:** en las láminas se ven los términos técnicos (nombres de reglas, código, archivos), pero al hablar **no los nombramos**: explicamos la idea en palabras simples. Si el profesor pregunta por un término, ahí sí lo explicamos.
 
 ## 1. Antes de empezar: qué tener preparado
+
+**Resumen:** la presentación se proyecta con **LibreOffice Impress** (tu notebook usa Linux y ahí no existe PowerPoint). La **demostración en vivo ocurre en la lámina 9** y consiste en ejecutar una prueba automática en el **proyecto local**, con la versión ya corregida. No hace falta levantar el servidor ni usar PythonAnywhere.
 
 ### Días antes
 - [ ] Hacer al menos **dos ensayos juntos, con cronómetro**. La meta es terminar entre 8:30 y 9:30.
@@ -12,30 +14,56 @@ Lo que dice cada uno está también en las **notas del orador** del PPTX, así q
 - [ ] Los dos leen las preguntas probables (sección 4) y hacen un simulacro: uno pregunta y el otro responde.
 - [ ] Entregar el ZIP en la plataforma del curso.
 
-### El día de la presentación (30 minutos antes)
-**Notebook de Xavier:**
-- [ ] Cargador conectado y adaptador HDMI o USB-C a mano.
-- [ ] Notificaciones silenciadas (modo no molestar) y programas innecesarios cerrados.
-- [ ] Pantalla en modo **extendido**, no duplicado, para ver las notas en el modo presentador.
-- [ ] El PPTX abierto en **PowerPoint**, no el PDF, y probado una vez en modo presentador.
-
-**Terminal para la demostración**, abierta y probada:
+### La noche anterior, paso A: dejar listo el entorno local (10 min, Xavier)
+Abre una terminal (**Super + Enter**) y ejecuta, uno por uno:
 ```bash
 cd ~/Projects/desarrollo-seguro/10-09/django-project
-source venv/bin/activate
+git branch --show-current        # main o evaluacion-u2: las dos tienen el mismo código
+source venv/bin/activate         # el prompt debe mostrar (venv)
+python -m django --version       # debe decir 6.1.2
+python manage.py check           # debe decir: System check identified no issues
+python manage.py test shopping   # debe terminar en: Ran 25 tests ... OK
+```
+- El proyecto necesita el archivo `.env` local, que ya existe. No lo abras ni lo muestres.
+- Si algo falla, ejecuta `pip install -r requirements.txt` con el venv activo y repite.
+- Las pruebas usan una base de datos temporal que se crea y se borra sola: no tocan datos reales.
+
+### La noche anterior, paso B: ensayo técnico con una pantalla externa (15 min, Xavier)
+Si tienes un TV o monitor, conéctalo y ensaya exactamente lo que harás en la sala. Al conectarlo, Omarchy lo trata como una **segunda pantalla**.
+
+Comandos de la terminal de la demostración (los usarás en el paso 3):
+```bash
+cd ~/Projects/desarrollo-seguro/10-09/django-project && source venv/bin/activate && clear
 python manage.py test shopping.tests.ShoppingItemValidationTests.test_backend_crear_con_cantidad_cero_no_guarda -v 2
 ```
-- [ ] Ejecutar el comando una vez antes de empezar, para confirmar que termina en `OK`.
-- [ ] Limpiar la pantalla (`clear`) y dejar el comando listo con la flecha hacia arriba.
-- [ ] Letra grande en la terminal (Ctrl + Shift + +) para que se lea desde el fondo de la sala.
 
-**Navegador:**
-- [ ] Una pestaña abierta en https://actividaddjango1.pythonanywhere.com, para comprobar que responde y por si piden verla.
-- [ ] Opcional, por si preguntan por SonarQube: levantarlo con `~/tools/start-sonarqube.sh`, esperar un minuto e iniciar sesión en http://localhost:9000.
+1. Pasa el foco a la pantalla externa con **Ctrl + Alt + Tab**.
+2. Con el foco en la pantalla externa, pulsa **Super + 5**. Abre ahí el PPTX con LibreOffice Impress y pulsa **F5** para iniciar la presentación.
+3. Sin cambiar de pantalla, pulsa **Super + 6** y abre una terminal (**Super + Enter**). Ejecuta la primera línea de los comandos de arriba y escribe la segunda **sin pulsar Enter**. Agranda la letra (**Ctrl + Shift + +**) para que se lea desde el fondo de la sala.
+4. Vuelve a la presentación con **Super + 5**.
+5. En la pantalla del notebook, deja abierto el PDF del guion para seguir lo que dices: con este método no se usa la consola del presentador.
 
-**Plan B:** dejar abierta la imagen `evaluacion_u2/evidencia/capturas/02_despues_validacion.png` por si la demostración falla.
+Si al conectar el TV algo no funciona como se describe, anota qué pasó. En la sala tendrás 15 minutos para resolverlo, y siempre está el plan B.
 
-**Respaldo:** llevar el PPTX y el ZIP también en un pendrive.
+### El día de la presentación (30 minutos antes)
+- [ ] Cargador conectado y adaptador HDMI o USB-C a mano.
+- [ ] Notificaciones silenciadas y programas innecesarios cerrados.
+- [ ] Repetir los pasos 1 a 4 del ensayo técnico con el proyector de la sala.
+- [ ] Probar una vez el comando de la demostración (Enter y comprobar que termina en `OK`). Después escribir `clear` y recuperar el comando con la flecha hacia arriba, **sin pulsar Enter**.
+- [ ] Volver a la presentación (**Super + 5**) en la lámina 1.
+- [ ] **Plan B:** en **Super + 7**, también en la pantalla externa, dejar abierta la imagen `evaluacion_u2/evidencia/capturas/02_despues_validacion.png`.
+- [ ] Una pestaña del navegador con https://actividaddjango1.pythonanywhere.com, por si piden ver la app (solo navegar).
+- [ ] **Respaldo:** el PPTX y el ZIP también en un pendrive.
+
+### La demostración en vivo, paso a paso (lámina 9, unos 20 segundos)
+1. Di el texto de la lámina 9 hasta «Se los muestro en vivo».
+2. Pulsa **Super + 6**: aparece la terminal con el comando ya escrito.
+3. Pulsa **Enter**. Primero pasan varias líneas «Applying…»; es normal.
+4. Mientras corre, di: «Esta prueba intenta guardar un producto con cantidad cero directo en el servidor…».
+5. Cuando aparezcan `... ok` y `OK`, señálalos: «…y como ven, termina en ok: la aplicación lo rechazó».
+6. Pulsa **Super + 5** para volver a la presentación y avanza con la flecha derecha a la lámina 10.
+
+**Si algo falla** (la terminal no aparece o la prueba da error): no improvises. Pulsa **Super + 7**, muestra la captura del plan B y di: «Esta es la misma prueba ejecutada el 19 de octubre; termina en OK». Luego vuelve con **Super + 5**.
 
 ### Qué NO mostrar nunca en pantalla
 - El archivo `.env`, ni local ni de PythonAnywhere, ni ninguna clave secreta.
@@ -43,7 +71,7 @@ python manage.py test shopping.tests.ShoppingItemValidationTests.test_backend_cr
 
 ### Roles durante la presentación
 - **Xavier:** controla el notebook, expone las láminas 1 a 10 y hace la demostración.
-- **Alejandro:** expone las láminas 11 a 14 y comparte la 15. Pide a Xavier que avance las láminas, o usa un control remoto si hay.
+- **Alejandro:** expone las láminas 11 a 14 y comparte la 15. Le pide a Xavier «siguiente» para avanzar.
 - **En las preguntas:** responde quien expuso ese tema. Si no saben algo, decirlo con honestidad: «No lo verificamos; lo podemos revisar».
 
 ## 2. Reparto y tiempos
@@ -77,8 +105,8 @@ El texto hablado suma unas 1325 palabras: unos 8.8 minutos a ritmo normal, más 
 ### Lámina 1: Portada
 
 **Hacer:**
-- Presentación abierta en modo presentador.
-- Xavier habla y controla el notebook; Alejandro está a su lado.
+- Presentación iniciada con F5 en la pantalla externa (Super + 5).
+- Xavier sigue el guion en la pantalla del notebook; Alejandro está a su lado.
 
 **Xavier dice** (unos 15 s):
 
@@ -167,8 +195,9 @@ El texto hablado suma unas 1325 palabras: unos 8.8 minutos a ritmo normal, más 
 
 **Hacer:**
 - Señalar las filas rojas de la columna «Antes».
-- Al decir «se los muestro», cambiar a la terminal (Alt+Tab) y ejecutar el comando de la demostración.
-- Volver a la presentación cuando aparezca «OK».
+- Al decir «Se los muestro en vivo»: Super + 6 (terminal) y Enter.
+- Cuando aparezca «OK», señalarlo y volver con Super + 5; flecha derecha a la lámina 10.
+- Si falla: Super + 7 (captura del plan B) y luego Super + 5.
 
 **Xavier dice** (unos 60 s):
 
