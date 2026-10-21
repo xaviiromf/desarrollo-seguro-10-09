@@ -1,0 +1,10 @@
+# Entorno: local (venv) DESPUÉS de fijar requirements.txt
+# Comandos: python --version; python -m django --version; python -m pip check; python manage.py test shopping
+# Fecha: 2026-10-20 21:33:05 -0300
+
+Python 3.14.7
+6.1.2
+No broken requirements found.
+Ran 25 tests in 16.113s
+OK
+Found 25 test(s).
