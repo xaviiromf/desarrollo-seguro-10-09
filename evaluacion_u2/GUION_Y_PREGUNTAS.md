@@ -78,7 +78,7 @@ El texto hablado suma unas 1325 palabras: unos 8.8 minutos a ritmo normal, más 
 
 **Hacer:**
 - Presentación abierta en modo presentador.
-- Xavier habla; Alejandro está al lado del notebook, con la terminal lista para la demostración.
+- Xavier habla y controla el notebook; Alejandro está a su lado.
 
 **Xavier dice** (unos 15 s):
 
