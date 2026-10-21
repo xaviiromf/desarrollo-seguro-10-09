@@ -48,8 +48,7 @@ Plan B si algo falla: mostrar `evidencia/capturas/02_despues_validacion.png`.
 
 ## Checklist del día de la presentación
 
-- [ ] PythonAnywhere: el sitio responde y la app está renovada (pestaña Web, **Run until 1 month from today**).
-- [ ] Capturas de SonarQube tomadas (lista en `README.md`).
+- [ ] PythonAnywhere: el sitio responde. La app ya está renovada hasta el 21-11-2026.
 - [ ] La terminal de la demostración está lista, con el venv activo, y la prueba se ejecutó una vez antes.
 - [ ] El PPTX se abre en el computador de la sala, con la vista del moderador para ver las notas.
 - [ ] Ninguna captura ni lámina muestra el valor de la SECRET_KEY ni el contenido del `.env`.
@@ -65,10 +64,13 @@ Porque el modelo es el punto común. Así el mismo control aplica al crear, al e
 Es una regla de negocio que definimos para una lista de compras doméstica: ninguna compra real necesita mil unidades de un producto. Además evita totales absurdos en el presupuesto. Está en constantes (`QUANTITY_MIN` y `QUANTITY_MAX`), así que cambiarla es una línea, y las pruebas de frontera la verifican.
 
 **¿Qué pasa con los productos que ya estaban guardados fuera de rango?**
-Los validadores no modifican datos existentes: se aplican cuando alguien crea o edita. La migración 0004 no cambia la base de datos. Revisar los registros existentes en producción quedó pendiente; no lo verificamos.
+Los validadores no modifican datos existentes: se aplican cuando alguien crea o edita. La migración 0004 no cambia la base de datos. Lo verificamos en producción el 20-10: de 15 productos guardados, ninguno estaba fuera de rango.
 
 **¿Por qué las pruebas del precio pasaban antes?**
 Porque ese control ya era correcto: `PositiveIntegerField` rechaza los negativos y el `clean()` del formulario maneja el caso "sin precio". La pauta pide no alterar un control correcto, así que lo verificamos con pruebas nuevas en vez de cambiarlo.
+
+**¿Por qué quedan 6 code smells?**
+Son de mantenibilidad: literales repetidos en las vistas, una función JavaScript compleja, un `catch` vacío y una variable sin uso. No afectan la seguridad, así que los dejamos como mejora pendiente con fundamento, que es una de las decisiones que permite la pauta.
 
 **¿La cobertura de SonarQube (64,7 %) no coincide con coverage.py (82 %)?**
 Miden distinto. SonarQube combina líneas y condiciones y considera todos los archivos Python del alcance. coverage.py reporta solo líneas, sobre los archivos configurados. Ninguna de las dos cifras prueba que el sistema sea seguro.
@@ -87,11 +89,11 @@ A02 es configuración incorrecta: el código puede estar bien, pero el despliegu
 
 ### Para Alejandro
 
-**¿Por qué no actualizaron Django en producción?**
-La pauta no lo exige, y un cambio en producción se coordina. Antes de recomendarlo verificamos lo necesario: misma serie (6.1.1 a 6.1.2), notas de seguridad y las 25 pruebas pasando con 6.1.2. Es el siguiente paso recomendado.
+**¿Por qué actualizaron Django si la pauta no lo exige?**
+Porque 6.1.2 corrige cuatro CVE y era un cambio de bajo riesgo. Antes de actualizar revisamos lo que pide la pauta: misma serie (6.1.1 a 6.1.2), notas de seguridad y las 25 pruebas pasando con 6.1.2 en Python 3.12 y 3.14. Lo aplicamos el 20-10 y verificamos el sitio en vivo.
 
-**¿Por qué local usa Django 5.2 y producción 6.1?**
-Porque `requirements.txt` dice `Django>=5.0.0`, y cada entorno instaló una versión distinta. Por eso recomendamos fijar versiones exactas. Lo relacionamos con A03, fallas en la cadena de suministro.
+**¿Por qué local usaba Django 5.2 y producción 6.1?**
+Porque `requirements.txt` decía `Django>=5.0.0`, y cada entorno instaló una versión distinta. Fijamos versiones exactas (commit `f29535c`) y ahora los dos usan 6.1.2. Lo relacionamos con A03, fallas en la cadena de suministro.
 
 **¿Si el repositorio es privado, la clave igual es un riesgo?**
 Sí. La puede ver cualquier persona con acceso al repositorio, a una copia o a un respaldo, y además es débil según Django. Un secreto que estuvo en git se considera expuesto: se rota.
@@ -106,4 +108,7 @@ No. Es una restricción del plan gratuito: la app vence al mes si no se renueva.
 No explotarla. Avisar al dueño o a PythonAnywhere de forma responsable y sin acceder a sus datos.
 
 **¿Cómo saben que la acción de concientización sirve?**
-Es concreta y medible: un checklist publicado en el README y una charla de 10 minutos. Se puede verificar si en los siguientes push aparecen secretos o falla `check --deploy`.
+Es concreta y medible. El checklist ya está publicado en el `README.md` del repositorio y se suma una charla de 10 minutos. Se puede verificar si en los siguientes push aparecen secretos o falla `check --deploy`.
+
+**¿Probaron en producción? ¿No dice la pauta que se use una copia local?**
+Las pruebas de validación se hicieron en copia local. En producción solo verificamos, después de desplegar, que nuestra propia app funcionara. Usamos un usuario ficticio que borramos al terminar y nunca tocamos datos reales ni apps de otros.

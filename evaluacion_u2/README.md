@@ -36,38 +36,45 @@
 | `cbab41a` | Corrección de la regex de `formatCLP` (javascript:S8786) |
 | `11f11d0` | Eliminación de los comodines de hosts y de la SECRET_KEY por defecto |
 | `d0d0ccd` | Accesibilidad: labels en los inputs (Web:InputWithoutLabelCheck) |
+| `f29535c` | Versiones exactas en `requirements.txt`, con Django 6.1.2 |
+| `37295d1` | Subtotal en formato CLP en el mensaje de producto agregado |
+| `019c866` | `Number.parseFloat` (javascript:S7773, confiabilidad) |
 
 Los demás commits son configuración de cobertura y archivos de evidencia.
 
-## Capturas que debe tomar Xavier
+## Capturas incluidas en `evidencia/capturas/`
 
-SonarQube exige iniciar sesión en el navegador, así que estas capturas no se pueden automatizar. Guárdalas en `evidencia/capturas/` con estos nombres:
+| Archivo | Muestra |
+|---|---|
+| `sonarqube_01_resumen.png` | Quality Gate aprobado; Security, Reliability y Maintainability en A; cobertura 64,7 % |
+| `sonarqube_02_actividad.png` | Historial de análisis, del 15-10 al 20-10 |
+| `sonarqube_03_obs1_S8786.png` | Observación 1 en estado Closed (Fixed) |
+| `sonarqube_04_obs2_S1192.png` | Observación 2 en estado Closed (Fixed) |
+| `pythonanywhere_01_vencimiento_antes.png` | La app iba a deshabilitarse el 24-10-2026 |
+| `pythonanywhere_02_vencimiento_renovado.png` | Renovada: vence el 21-11-2026 |
+| `pythonanywhere_03_force_https.png` | Force HTTPS activado |
+| `01_antes_validacion.png`, `02_despues_validacion.png`, `01_antes_hosts.png`, `03_despues_hosts_env_recomendado.png` | Salidas de pruebas y de configuración, generadas a partir de los `.txt` |
 
-1. `sonarqube_01_resumen.png`: http://localhost:9000/dashboard?id=desarrollo-seguro-django (Quality Gate y métricas).
-2. `sonarqube_02_actividad.png`: pestaña **Activity** del proyecto, que muestra los dos análisis.
-3. `sonarqube_03_obs1_S8786.png`: **Issues** → filtro *Status: Closed* → issue `javascript:S8786` en `calculator.js`.
-4. `sonarqube_04_obs2_S1192.png`: el mismo filtro → issue `python:S1192` en `settings.py`.
-5. `pythonanywhere_vencimiento.png`: pestaña **Web** de PythonAnywhere, con la fecha en que se deshabilitará el sitio.
+## Cambios aplicados en PythonAnywhere (20-10-2026)
 
-Para levantar SonarQube: `~/tools/start-sonarqube.sh`. Espera alrededor de un minuto antes de abrir http://localhost:9000.
+1. **`.env`:**
+   - SECRET_KEY nueva, de 50 caracteres aleatorios.
+   - `ALLOWED_HOSTS=actividaddjango1.pythonanywhere.com`.
+   - `CSRF_TRUSTED_ORIGINS=https://actividaddjango1.pythonanywhere.com`, con el typo corregido.
+2. **Rama desplegada:** `evaluacion-u2`, mediante `git bundle`, porque el servidor no tiene credenciales de GitHub. Se instaló `requirements.txt` (Django 6.1.1 → 6.1.2) y se ejecutaron `migrate` y `collectstatic`.
+3. **Web app:** Force HTTPS activado, recarga, y renovación hasta el 21-11-2026.
+4. **Verificación en vivo:**
+   - HTTP redirige a HTTPS.
+   - El login funciona.
+   - Cantidad 0 se rechaza y cantidad 5 se acepta.
+   - La prueba usó un usuario ficticio que se borró al terminar.
 
-`evidencia/capturas/` ya incluye imágenes de las salidas de pruebas y de configuración, generadas a partir de los `.txt`.
+   Evidencia en `evidencia/configuracion/06` a `08`.
 
-## Pasos pendientes en PythonAnywhere, en este orden
+## Mantenimiento
 
-**Importante:** sin el paso 2, el sitio dará Error 400 al desplegar esta rama.
-
-1. Genera una SECRET_KEY nueva en la consola de PythonAnywhere:
-   `python -c "from django.core.management.utils import get_random_secret_key as g; print(g())"`
-2. Edita `~/desarrollo-seguro-10-09/.env` y deja estas tres líneas:
-   - `SECRET_KEY=<la clave nueva>`
-   - `ALLOWED_HOSTS=actividaddjango1.pythonanywhere.com`
-   - `CSRF_TRUSTED_ORIGINS=https://actividaddjango1.pythonanywhere.com`
-3. Despliega la rama, desde el virtualenv activo y dentro de la carpeta del proyecto:
-   ```bash
-   git fetch && git checkout evaluacion-u2
-   python manage.py migrate
-   python manage.py collectstatic --noinput
-   ```
-4. En la pestaña **Web**, pulsa **Reload** y luego **Run until 1 month from today**.
-5. Opcional, recomendado en la lámina 11: `pip install Django==6.1.2`, otra vez **Reload**, y prueba el sitio.
+- **Renovar la app cada mes:** pestaña **Web** → **Run until 1 month from today**. PythonAnywhere envía un correo de aviso una semana antes.
+- **SonarQube:** se inicia con `~/tools/start-sonarqube.sh` y se usa en http://localhost:9000.
+  - Para escanear: `SONAR_TOKEN=<token> sonar-scanner` desde la raíz del proyecto.
+  - El token anterior se revocó. Crea uno nuevo en *My Account → Security*.
+- **Reconstruir la presentación:** el generador está en `fuente_presentacion/build.js` (requiere `pptxgenjs`).
