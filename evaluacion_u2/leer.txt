@@ -14,10 +14,6 @@ Rama revisada: evaluacion-u2, creada a partir de main (commit 2516b9f)
   Nuestra presentación: 15 láminas más un anexo de fuentes. Dejamos las fuentes
   consultadas, con su fecha, en las notas del orador de cada lámina.
 
-- Presentacion_U2_Desarrollo_Seguro.pdf
-  La misma presentación en PDF. La exportamos con LibreOffice, así que la
-  tipografía puede variar levemente.
-
 - evidencia/
   Las salidas reales de lo que ejecutamos. Cada archivo .txt indica el comando,
   la fecha y el entorno en que lo corrimos.
