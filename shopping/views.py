@@ -328,7 +328,7 @@ class ShoppingItemCreateView(LoginRequiredMixin, CreateView):
         item = form.save()
         messages.success(
             self.request,
-            f"Producto '{item.name}' agregado a la lista. Subtotal: ${item.total_price:,.2f}"
+            f"Producto '{item.name}' agregado a la lista. Subtotal: {item.formatted_total_price}"
         )
         return redirect('shopping:list_detail', pk=shopping_list.pk)
 
