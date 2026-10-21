@@ -5,7 +5,7 @@
 #   2. git fetch (bundle) + checkout evaluacion-u2; pip install -r requirements.txt (Django 6.1.1 -> 6.1.2); migrate (0004, no-op); collectstatic.
 #   3. API de PythonAnywhere: force_https=true; reload de la web app.
 # Comandos de verificación: python manage.py check --deploy | grep -E 'W0|identified'; python -m pip list
-# Fecha: 2026-10-20 00:39 (hora del servidor, UTC)
+# Fecha: 2026-10-20 21:39 -0300 (00:39 UTC del 21-10)
 
 System check identified some issues:
 ?: (security.W005) You have not set the SECURE_HSTS_INCLUDE_SUBDOMAINS setting to True. [...]

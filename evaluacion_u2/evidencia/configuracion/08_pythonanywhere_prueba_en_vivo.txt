@@ -1,5 +1,5 @@
 # Prueba de punta a punta sobre https://actividaddjango1.pythonanywhere.com, con datos ficticios
-# Fecha: 2026-10-20 00:38 UTC | Usuario temporal «qa_temporal_u2» creado para la prueba y BORRADO al terminar
+# Fecha: 2026-10-20 21:38 -0300 (00:38 UTC del 21-10) | Usuario temporal «qa_temporal_u2» creado para la prueba y BORRADO al terminar
 #   (delete -> 3 objetos: 1 usuario, 1 lista, 1 producto). Herramienta: curl con cookies y token CSRF reales del formulario.
 
 == HTTP -> HTTPS (force_https)

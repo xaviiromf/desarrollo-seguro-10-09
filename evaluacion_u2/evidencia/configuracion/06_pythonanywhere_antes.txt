@@ -1,6 +1,6 @@
 # Entorno: PythonAnywhere (producción), consola Bash del virtualenv de la web app, carpeta ~/desarrollo-seguro-10-09 (rama main, 2516b9f)
 # Comandos: python manage.py check --deploy | grep -E 'W0|identified'; python -m django --version
-# Fecha: 2026-10-20 00:31 (hora del servidor PythonAnywhere, UTC)
+# Fecha: 2026-10-20 21:31 -0300 (00:31 UTC del 21-10, hora que muestra la consola de PythonAnywhere)
 # Configuración de la web app vía API de PythonAnywhere: expiry=2026-10-24, force_https=false
 
 System check identified some issues:

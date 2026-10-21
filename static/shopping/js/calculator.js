@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         subtotalDisplay.className = 'text-base font-extrabold text-emerald-800';
-        const qty = parseFloat(qtyInput ? qtyInput.value : 1) || 0;
-        const price = parseFloat(priceInput ? priceInput.value : 0) || 0;
+        const qty = Number.parseFloat(qtyInput ? qtyInput.value : 1) || 0;
+        const price = Number.parseFloat(priceInput ? priceInput.value : 0) || 0;
         const total = Math.round(qty * price);
 
         subtotalDisplay.textContent = formatCLP(total);
