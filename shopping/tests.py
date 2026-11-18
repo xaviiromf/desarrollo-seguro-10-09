@@ -573,3 +573,8 @@ class SecurityHeadersAndXssTests(TestCase):
         self.assertNotIn('<script>', html)
         self.assertNotIn(self.payload, html)                       # la comilla nunca aparece sin escapar
         self.assertIn('data-confirm="¿Eliminar x&#x27;+(document.title=&#x27;XSS&#x27;)+&#x27;?"', html)
+
+    def test_login_no_publica_credenciales(self):
+        html = self.client.get(reverse('login')).content.decode()
+        self.assertNotIn('Contraseña:', html)
+        self.assertNotIn('Acceso administrador', html)

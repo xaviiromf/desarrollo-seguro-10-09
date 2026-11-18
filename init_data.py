@@ -1,7 +1,9 @@
 """
-Script de inicialización para crear el superusuario 'admin' / 'admin' y datos de prueba con Pesos Chilenos (CLP).
+Script de inicialización de datos semilla (solo desarrollo local) con Pesos Chilenos (CLP).
+Las contraseñas se leen de INIT_ADMIN_PASSWORD e INIT_DEMO_PASSWORD: nunca se dejan escritas en el código.
 """
 import os
+import sys
 import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'supermarket_project.settings')
@@ -10,12 +12,19 @@ django.setup()
 from django.contrib.auth.models import User
 from shopping.models import ShoppingList, ShoppingItem, Priority
 
+def _password(variable):
+    valor = os.environ.get(variable)
+    if not valor:
+        sys.exit(f"Define {variable} antes de ejecutar este script.")
+    return valor
+
+
 def run():
     print("Iniciando creación de superusuario y datos semilla en Pesos Chilenos (CLP)...")
 
     # 1. Crear o actualizar usuario admin / admin
     admin_user, created = User.objects.get_or_create(username='admin')
-    admin_user.set_password('admin')
+    admin_user.set_password(_password('INIT_ADMIN_PASSWORD'))
     admin_user.email = 'admin@pastelmarket.local'
     admin_user.is_superuser = True
     admin_user.is_staff = True
@@ -23,14 +32,14 @@ def run():
     if created:
         print("✓ Superusuario 'admin' creado exitosamente.")
     else:
-        print("✓ Superusuario 'admin' actualizado con contraseña 'admin'.")
+        print("✓ Superusuario 'admin' actualizado.")
 
     # 2. Crear usuario secundario para demostración de aislamiento
     demo_user, _ = User.objects.get_or_create(username='maria')
-    demo_user.set_password('maria123')
+    demo_user.set_password(_password('INIT_DEMO_PASSWORD'))
     demo_user.email = 'maria@pastelmarket.local'
     demo_user.save()
-    print("✓ Usuario de prueba 'maria' (pass: maria123) preparado.")
+    print("✓ Usuario de prueba 'maria' preparado.")
 
     # 3. Limpiar listas de prueba previas para recargar con CLP y productos sin precio
     ShoppingList.objects.filter(user__in=[admin_user, demo_user]).delete()
