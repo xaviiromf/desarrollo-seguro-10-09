@@ -1,0 +1,29 @@
+# Sesiones y cookies en el laboratorio Docker (perfil HTTP), 2026-11-18 15:01 -0300
+# Los valores de las cookies se reemplazan por <oculto>.
+
+## Backend de sesiones
+
+SESSION_ENGINE = django.contrib.sessions.backends.db
+SESSION_COOKIE_AGE = 1209600 segundos
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = Lax
+SESSION_COOKIE_SECURE = False (laboratorio HTTP; True en producción)
+CSRF_COOKIE_HTTPONLY = True
+PASSWORD_HASHERS[0] = django.contrib.auth.hashers.PBKDF2PasswordHasher
+
+## Set-Cookie al iniciar sesión (POST /login/)
+Set-Cookie: csrftoken=<oculto>; expires=Wed, 17 Nov 2027 18:01:24 GMT; HttpOnly; Max-Age=31449600; Path=/; SameSite=Lax
+Set-Cookie: messages=<oculto>; HttpOnly; Path=/; SameSite=Lax
+Set-Cookie: sessionid=<oculto>; expires=Wed, 02 Dec 2026 18:01:24 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax
+
+## La sesión se guarda en la tabla django_session (solo la clave viaja en la cookie)
+
+Filas en django_session: 9
+Contenido decodificado de una sesión (claves): ['_auth_user_backend', '_auth_user_hash', '_auth_user_id']
+
+## Cómo se guarda la contraseña (hash, nunca el texto)
+
+pbkdf2_sha256 | iteraciones: 1500000 | sal y hash: <oculto>
+
+## Página privada: no se guarda en caché
+Cache-Control: private, no-store
