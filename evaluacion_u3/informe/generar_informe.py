@@ -11,7 +11,7 @@ EVI = AQUI.parent / "evidencia"
 U2 = AQUI.parent.parent / "evaluacion_u2" / "evidencia" / "sonarqube"
 REPO = "https://github.com/xaviiromf/desarrollo-seguro-10-09"
 PR = f"{REPO}/pull/1"
-COMMIT_CODIGO = "c35d594"
+COMMIT_CODIGO = "132443b"
 FECHA_CONSULTA = "18-11-2026"
 
 
@@ -63,7 +63,7 @@ def portada():
   {tabla(["", ""], [
       ["Integrantes", "Xavier Romero · Alejandro Figueroa"],
       ["Fecha de entrega", "19-11-2026"],
-      ["Repositorio", f'<a href="{REPO}">{REPO}</a> (privado; acceso para el docente a solicitud)'],
+      ["Repositorio", f'<a href="{REPO}">{REPO}</a> (público)'],
       ["Pull Request", f'<a href="{PR}">{PR}</a>'],
       ["Versión revisada", f"Rama <code>evaluacion-u3</code>, código en el commit <code>{COMMIT_CODIGO}</code>; imagen <code>supermercado-lab:u3</code>"],
   ], "ficha")}
@@ -90,7 +90,7 @@ def s2():
         ("python:S1192", 194): ("Media", "Corregir: constante <code>LIST_DETAIL_URL</code>"),
         ("python:S1192", 54): ("Media", "Corregir: constante <code>LIST_INDEX_URL</code>"),
         ("python:S1481", 374): ("Baja", "Corregir: eliminar la variable"),
-        ("javascript:S3776", 59): ("Alta", "Corregir: dividir la función; al revisarla apareció un XSS en el DOM (2.2)"),
+        ("javascript:S3776", 59): ("Alta", "Corregir: dividir la función; al revisarla apareció un XSS en el DOM (2.3)"),
         ("javascript:S2486", 97): ("Media", "Corregir: registrar el error y volver al envío normal del formulario"),
         ("javascript:S6582", 23): ("Baja", "Corregir: encadenamiento opcional"),
     }
@@ -105,10 +105,28 @@ def s2():
     if sd:
         met, issues, qg = sd
         abiertas = ", ".join(sorted({i["rule"] for i in issues})) or "ninguna"
-        sonar_final = f"""<p><b>Re-escaneo de verificación:</b> Quality Gate <b>{qg}</b>; {met.get('vulnerabilities')} vulnerabilidades,
-        {met.get('security_hotspots')} security hotspots, {met.get('bugs')} bugs y {met.get('code_smells')} code smells
-        (abiertos: {e(abiertas)}). Cobertura importada: {met.get('coverage')} %.</p>
-        {img('../evidencia/sonarqube/captura_issues_corregidos.png', 'SonarQube: hallazgos en estado Closed (Fixed) tras la corrección.', '88%') if (EVI / 'sonarqube' / 'captura_issues_corregidos.png').exists() else ''}"""
+        sonar_final = f"""<h3>2.2 Re-escaneo de verificación (18-11-2026)</h3>
+        <p>El último análisis de la Evaluación 2 tenía 28 días y no incluía los cambios de esta evaluación, así que re-escaneamos el código final.
+        El primer intento analizó también la carpeta de entrega <code>evaluacion_u3/</code> (informe, reportes HTML de ZAP y scripts), que no es código de la app:
+        1.113 alertas ajenas y Quality Gate en ERROR. Agregamos <code>evaluacion_u3/**</code> a las exclusiones técnicas, igual que <code>evaluacion_u2/**</code> en la Evaluación 2.</p>
+        <p>El análisis de la aplicación mostró <b>dos hallazgos nuevos</b>, introducidos por el código de esta evaluación, que corregimos:
+        <code>docker:S6470</code> (vulnerabilidad, <i>Security High</i>): el <code>COPY . .</code> del Dockerfile podía meter archivos sensibles a la imagen; ahora se copian solo las carpetas de la app.
+        Al revisarlo encontramos que <code>.dockerignore</code> excluía <code>node_modules/</code> solo en la raíz y se colaban 23 MB de dependencias de Node (<code>theme/static_src</code>); ahora no entran.
+        <code>Web:InputWithoutLabelCheck</code> (bug): el <code>&lt;textarea hidden&gt;</code> del texto de WhatsApp no tenía etiqueta.</p>
+        <p>Por último, la condición de cobertura del código nuevo fallaba (29,1 %). Agregamos pruebas al comando de cuentas de prueba y excluimos <b>solo de la cobertura</b>
+        (los archivos siguen analizados) las migraciones, que son código generado, el script semilla <code>init_data.py</code> y el JavaScript, para el que el proyecto no tiene
+        un framework de pruebas que genere el reporte; el JavaScript se verificó en el navegador (sección 6).</p>
+        {tabla(["Métrica", "Evaluación 2 (20-10-2026)", "Evaluación 3 (18-11-2026)"], [
+            ["Quality Gate", "Passed", f"<b>{qg.replace('OK', 'Passed')}</b> (cobertura de código nuevo 88,9 %)"],
+            ["Vulnerabilidades · Bugs · Hotspots", "0 · 0 · 0", f"{met.get('vulnerabilities')} · {met.get('bugs')} · {met.get('security_hotspots')}"],
+            ["Code smells", "6", f"<b>{met.get('code_smells')}</b> (abiertos: {e(abiertas)})"],
+            ["Calificaciones (seguridad, confiabilidad, mantenibilidad)", "A · A · A", "A · A · A"],
+            ["Cobertura total", "64,7 %", f"{met.get('coverage').replace('.', ',')} %"],
+        ])}
+        <div class="grid2">
+        {img('../evidencia/sonarqube/captura_resumen_final.png', 'Re-escaneo final: Quality Gate aprobado, 0 issues abiertos y A en todo.')}
+        {img('../evidencia/sonarqube/captura_issues_corregidos.png', 'Issues cerrados (Fixed) de las reglas tratadas. Los dos de generar_informe.py provienen del primer intento que incluyó la carpeta de entrega.')}
+        </div>"""
     else:
         sonar_final = '<p class="pendiente"><b>Re-escaneo de SonarQube pendiente</b> de iniciar sesión en el panel local; las correcciones están en el código y en el commit indicado.</p>'
     return f"""
@@ -117,7 +135,7 @@ def s2():
 <p>Partimos del último análisis de la Evaluación 2 (SonarQube 26.9, 20-10-2026): Quality Gate aprobado, 0 vulnerabilidades, 0 security hotspots y <b>6 code smells pendientes</b>. Al no haber hotspots no hubo revisión contextual que hacer; recordamos que un hotspot exige revisión y no confirma por sí solo una vulnerabilidad. No agregamos exclusiones: solo se excluyen carpetas técnicas (entorno virtual, dependencias, archivos generados y la carpeta de entrega).</p>
 {tabla(["Regla", "Archivo", "Problema", "Tipo e impacto", "Prioridad", "Decisión técnica"], filas, "small")}
 {sonar_final}
-<h3>2.2 Defectos reales encontrados al corregir</h3>
+<h3>2.3 Defectos reales encontrados al corregir</h3>
 <p>Al refactorizar la función que SonarQube marcaba por complejidad (<code>javascript:S3776</code>) encontramos un <b>XSS en el DOM</b> que la herramienta no señaló: al marcar un producto como comprado, el script tomaba el nombre con <code>textContent</code> (texto sin escapar) y lo volvía a insertar con <code>innerHTML</code>. Un producto llamado <code>&lt;img src=x onerror=…&gt;</code> ejecutaría código.</p>
 {codigo("""if (data.is_purchased) {
     nameCell.innerHTML = `<s>${nameCell.textContent.trim()}</s>`;   // texto del usuario como HTML
@@ -134,7 +152,7 @@ def s2():
 }""", "Después · commit 5ccd32a")}
 <p>También corregimos un defecto funcional en las vistas de eliminación: desde Django 4, <code>DeleteView</code> procesa el POST en <code>form_valid()</code> y ya no llama a <code>delete()</code>, por lo que los mensajes de confirmación nunca se mostraban. La prueba <code>test_eliminar_producto_propio_muestra_mensaje</code> falla con el código anterior y pasa con el corregido.</p>
 
-<h3>2.3 Autenticación y acceso al CRUD</h3>
+<h3>2.4 Autenticación y acceso al CRUD</h3>
 <p>El proyecto ya tenía login y control de acceso con el sistema de autenticación de Django. Los revisamos contra cada requisito y escribimos <b>12 pruebas nuevas</b> que los demuestran.</p>
 {tabla(["Requisito", "Cómo se cumple", "Prueba"], [
     ["Login con credenciales válidas", "<code>LoginView</code> de Django (<code>UserLoginView</code>)", "<code>test_login_valido_redirige_y_crea_sesion</code>"],
@@ -282,7 +300,7 @@ def s5():
     ["Contexto", "<code>CRUD-laboratorio</code>, incluye solo <code>http://127\\.0\\.0\\.1:8000.*</code>"],
     ["Objetivo", "<code>http://127.0.0.1:8000</code>, imagen <code>supermercado-lab:u3</code> con login y correcciones de SonarQube, antes de las correcciones motivadas por ZAP"],
     ["Recorrido", "Navegador Chromium enrutado por el proxy de ZAP con la cuenta ficticia <code>qa_ana</code>: login, listas (crear, buscar, editar, duplicar, exportar CSV, eliminar), productos (agregar, uno con cantidad 0, editar, marcar, eliminar comprados), logout, registro y una ruta privada sin sesión. Se automatizó con <code>evaluacion_u3/herramientas/recorrido_navegador.mjs</code> para repetir exactamente las mismas acciones en el análisis final"],
-    ["Análisis", "Pasivo, esperando a que la cola de ZAP llegara a 0"],
+    ["Análisis", "Pasivo, esperando a que la cola de ZAP llegara a 0. ZAP 2.17.0 en modo daemon para el análisis inicial y final; verificación adicional en ZAP Desktop (6.2)"],
     ["Cobertura", f"{len(urls) - 1} URLs del objetivo registradas ({len(rutas)} rutas distintas). El árbol Sites contiene <b>solo</b> 127.0.0.1:8000: el perfil limpio del navegador no generó tráfico a terceros"],
     ["Reportes", "<code>evidencia/zap/inicial/</code>: <code>reporte.html</code> (legible), <code>reporte.json</code> y <code>reporte.md</code> (estructurados), filtrados al objetivo"],
 ], "small")}
@@ -357,14 +375,16 @@ WHITENOISE_ALLOW_ALL_ORIGINS = False''', 'supermarket_project/settings.py (despu
 {img('../evidencia/capturas/zap_inicial_resumen.png', 'Reporte inicial.')}
 {img('../evidencia/capturas/zap_final_resumen.png', 'Reporte final: solo alertas informativas.')}
 </div>
-<p><b>Pruebas automatizadas:</b> 42 pruebas pasan (validación de la Evaluación 2, autenticación y autorización, cabeceras y XSS).</p>
+<p><b>Verificación complementaria en ZAP Desktop.</b> Repetimos el recorrido con ZAP Desktop 2.17.0 (interfaz gráfica), sesión <code>u3_desktop</code> y contexto <code>CRUD-laboratorio</code>, con un Chromium visible enrutado por su proxy: 69 mensajes, el árbol Sites contiene solo el objetivo y no hay alertas altas, medias ni bajas (solo las 3 informativas). Reporte en <code>evidencia/zap/desktop/</code>.</p>
+{img('../evidencia/zap/desktop/zap_desktop_sesion.png', 'ZAP Desktop: contexto CRUD-laboratorio, Sites solo con 127.0.0.1:8000, historial del recorrido por el proxy y barra de alertas (0 · 0 · 0 · 3).', '92%')}
+<p><b>Pruebas automatizadas:</b> 44 pruebas pasan (validación de la Evaluación 2, autenticación y autorización, cabeceras, XSS y el comando de cuentas de prueba).</p>
 <h3>6.3 Pendientes y riesgos que permanecen</h3>
 <ul>
 <li><b>Limitar los intentos de login</b> (fuerza bruta): pendiente; candidato <code>django-axes</code> o limitación en el proxy.</li>
 <li><b>Cookies Secure y HSTS en el laboratorio:</b> contextual, porque usa HTTP; en producción están activos.</li>
 <li><b>Registro abierto:</b> riesgo aceptado (creación masiva de cuentas).</li>
 <li><b>Auditoría de acciones</b> (repudio): no implementada.</li>
-<li><b>Code smells</b> que SonarQube aún reporte tras el re-escaneo, si los hay, quedan como mejora de mantenibilidad.</li>
+<li><b>Cobertura del JavaScript:</b> sin pruebas automatizadas propias (excluido solo de la métrica de cobertura); se verifica en navegador.</li>
 </ul>"""
 
 
@@ -372,7 +392,7 @@ def s7():
     return f"""
 <h2>7. Conclusiones técnicas</h2>
 <p><b>SAST frente a DAST.</b> SonarQube (SAST) lee el código sin ejecutarlo: nos dio reglas de mantenibilidad y, al atenderlas, nos llevó a un XSS que no marcaba. ZAP (DAST) observa la aplicación en ejecución: detectó lo que solo se ve en las respuestas reales (CSP ausente, CORS en los estáticos, atributos de cookies), cosas que el código fuente no muestra porque dependen de configuración y de librerías de terceros. Ninguno de los dos detectó los problemas más graves: el XSS almacenado en el atributo <code>onsubmit</code>, las credenciales publicadas en el login y las fallas de autorización, que solo aparecen con revisión manual y pruebas dirigidas.</p>
-<p><b>Efectividad de los cambios.</b> Las tres alertas de ZAP de riesgo medio y bajo desaparecieron con el mismo recorrido; los dos hallazgos manuales de prioridad alta se confirmaron antes y se verificaron corregidos después; y 42 pruebas automatizadas dejan fijo el comportamiento. La CSP se probó en todas las páginas del recorrido sin violaciones.</p>
+<p><b>Efectividad de los cambios.</b> Las tres alertas de ZAP de riesgo medio y bajo desaparecieron con el mismo recorrido; los dos hallazgos manuales de prioridad alta se confirmaron antes y se verificaron corregidos después; SonarQube cerró los 6 hallazgos heredados y los 2 nuevos con el Quality Gate aprobado, y 44 pruebas automatizadas dejan fijo el comportamiento. La CSP se probó en todas las páginas del recorrido sin violaciones.</p>
 <p><b>Riesgos residuales.</b> Falta limitar intentos de login, no hay auditoría de acciones, el registro es abierto y el laboratorio usa HTTP. Un análisis pasivo no reemplaza un análisis activo ni una prueba de penetración: el informe no afirma que la aplicación esté libre de vulnerabilidades.</p>
 <h3>Aporte de cada integrante</h3>
 {tabla(["Integrante", "Aporte técnico"], [
@@ -410,7 +430,7 @@ def s8():
 <h3>Anexos (en el repositorio, rama <code>evaluacion-u3</code>)</h3>
 {tabla(["Anexo", "Ubicación"], [
     ["Pull Request", f'<a href="{PR}">{PR}</a>'],
-    ["Reportes completos de ZAP (HTML, JSON, MD, URLs y árbol Sites)", "<code>evaluacion_u3/evidencia/zap/inicial/</code> y <code>.../zap/final/</code>"],
+    ["Reportes completos de ZAP (HTML, JSON, MD, URLs y árbol Sites)", "<code>evaluacion_u3/evidencia/zap/inicial/</code>, <code>.../zap/final/</code> y <code>.../zap/desktop/</code>"],
     ["SonarQube (métricas e issues en JSON, capturas)", "<code>evaluacion_u3/evidencia/sonarqube/</code> y <code>evaluacion_u2/evidencia/sonarqube/</code>"],
     ["Pruebas de acceso antes y después", "<code>evaluacion_u3/evidencia/login/</code>"],
     ["Verificación manual (XSS, alerta 10031)", "<code>evaluacion_u3/evidencia/manual/</code>"],
