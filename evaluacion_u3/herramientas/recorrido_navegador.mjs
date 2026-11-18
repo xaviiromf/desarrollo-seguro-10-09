@@ -13,7 +13,7 @@ if (!USER || !PASS) { console.error('Faltan LAB_USER y LAB_PASSWORD'); process.e
 
 const perfil = mkdtempSync(join(tmpdir(), 'zap-chromium-'));
 const PORT = 9444;
-const chrome = spawn('chromium', ['--headless=new', `--remote-debugging-port=${PORT}`, `--user-data-dir=${perfil}`,
+const chrome = spawn('chromium', [...(process.env.VISIBLE ? [] : ['--headless=new']), `--remote-debugging-port=${PORT}`, `--user-data-dir=${perfil}`,
   ...(PROXY === 'directo' ? [] : [`--proxy-server=http://${PROXY}`, '--proxy-bypass-list=<-loopback>']),
   '--no-first-run', '--window-size=1400,900', 'about:blank'], { stdio: 'ignore' });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

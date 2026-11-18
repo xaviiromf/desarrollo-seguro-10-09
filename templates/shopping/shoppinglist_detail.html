@@ -357,6 +357,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
+<label for="whatsapp-text" class="sr-only">Texto de la lista para copiar a WhatsApp</label>
 <textarea id="whatsapp-text" hidden readonly>🛒 *LISTA DE SUPERMERCADO: {{ shopping_list.name }}*
 Prioridad: {{ shopping_list.get_priority_display }}
 {% if shopping_list.budget_limit %}Tope de Presupuesto: {{ shopping_list.budget_limit|clp }}

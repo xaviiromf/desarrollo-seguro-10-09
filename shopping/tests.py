@@ -578,3 +578,28 @@ class SecurityHeadersAndXssTests(TestCase):
         html = self.client.get(reverse('login')).content.decode()
         self.assertNotIn('Contraseña:', html)
         self.assertNotIn('Acceso administrador', html)
+
+
+class CrearCuentasPruebaCommandTests(TestCase):
+    """Comando del laboratorio Docker: crea cuentas ficticias con contraseñas tomadas del entorno."""
+
+    def test_crea_cuentas_y_listas_con_contrasenas_del_entorno(self):
+        from unittest import mock
+        from django.core.management import call_command
+        entorno = {'LAB_PASSWORD_ANA': 'clave-ficticia-ana-2026', 'LAB_PASSWORD_BETO': 'clave-ficticia-beto-2026'}
+        with mock.patch.dict('os.environ', entorno):
+            call_command('crear_cuentas_prueba', stdout=open('/dev/null', 'w'))
+            call_command('crear_cuentas_prueba', stdout=open('/dev/null', 'w'))  # idempotente
+        ana = User.objects.get(username='qa_ana')
+        self.assertTrue(ana.check_password('clave-ficticia-ana-2026'))
+        self.assertEqual(ShoppingList.objects.filter(user=ana).count(), 1)
+        self.assertEqual(ShoppingItem.objects.filter(shopping_list__user=ana).count(), 1)
+
+    def test_falla_si_falta_la_contrasena(self):
+        from unittest import mock
+        from django.core.management import call_command
+        from django.core.management.base import CommandError
+        with mock.patch.dict('os.environ', {}, clear=True):
+            with self.assertRaises(CommandError):
+                call_command('crear_cuentas_prueba')
+        self.assertFalse(User.objects.filter(username='qa_ana').exists())

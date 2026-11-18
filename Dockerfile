@@ -16,8 +16,15 @@ RUN useradd --system --uid 10001 --no-create-home app \
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# El código queda como propiedad de root: el proceso no puede modificarlo.
-COPY . .
+# Solo el código de la aplicación, de forma explícita (nada de COPY . .), como propiedad de root:
+# el proceso no puede modificarlo y ningún archivo ajeno o secreto entra a la imagen.
+COPY manage.py ./
+COPY supermarket_project/ supermarket_project/
+COPY shopping/ shopping/
+COPY theme/ theme/
+COPY templates/ templates/
+COPY static/ static/
+COPY docker/ docker/
 
 # Estáticos recopilados en la construcción; la clave es solo un marcador para este paso.
 RUN SECRET_KEY=solo-para-collectstatic DEBUG=False python manage.py collectstatic --noinput

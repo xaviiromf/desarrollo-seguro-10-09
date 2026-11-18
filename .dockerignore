@@ -8,13 +8,15 @@ venv/
 *.sqlite3-journal
 staticfiles/
 media/
-__pycache__/
-*.pyc
+**/__pycache__/
+**/*.pyc
 .coverage
 coverage.xml
 htmlcov/
 .scannerwork/
-node_modules/
+**/node_modules/
+# Fuentes de Tailwind: el CSS ya va compilado en theme/static/
+theme/static_src/
 # Ajenos a la construcción
 .git/
 .gitignore
