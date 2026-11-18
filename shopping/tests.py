@@ -538,3 +538,38 @@ class AuthenticationAndAuthorizationTests(TestCase):
         response = self.client.post(reverse('shopping:item_delete', kwargs={'pk': self.item.pk}), follow=True)
         self.assertFalse(ShoppingItem.objects.filter(pk=self.item.pk).exists())
         self.assertIn('eliminado', ' '.join(str(m) for m in response.context['messages']))
+
+
+class SecurityHeadersAndXssTests(TestCase):
+    """Evaluación 3, etapa 6: correcciones motivadas por ZAP y por la revisión manual."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='cabeceras', password='clave-cabeceras-2026')
+        self.shopping_list = ShoppingList.objects.create(user=self.user, name='Lista cabeceras')
+        self.payload = "x'+(document.title='XSS')+'"
+        ShoppingItem.objects.create(shopping_list=self.shopping_list, name=self.payload, quantity=1, unit_price=100)
+
+    def test_csp_presente_y_sin_codigo_en_linea(self):
+        for url in [reverse('login')]:
+            csp = self.client.get(url)['Content-Security-Policy']
+            self.assertIn("default-src 'self'", csp)
+            self.assertIn("frame-ancestors 'none'", csp)
+            self.assertNotIn('unsafe-inline', csp)
+
+    def test_paginas_privadas_no_se_guardan_en_cache(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('shopping:list_detail', kwargs={'pk': self.shopping_list.pk}))
+        self.assertIn('no-store', response['Cache-Control'])
+        self.assertIn('private', response['Cache-Control'])
+
+    def test_cookie_csrf_httponly(self):
+        response = self.client.get(reverse('login'))
+        self.assertTrue(response.cookies['csrftoken']['httponly'])
+
+    def test_nombre_de_producto_no_llega_a_codigo_ejecutable(self):
+        self.client.force_login(self.user)
+        html = self.client.get(reverse('shopping:list_detail', kwargs={'pk': self.shopping_list.pk})).content.decode()
+        self.assertNotIn('onsubmit=', html)
+        self.assertNotIn('<script>', html)
+        self.assertNotIn(self.payload, html)                       # la comilla nunca aparece sin escapar
+        self.assertIn('data-confirm="¿Eliminar x&#x27;+(document.title=&#x27;XSS&#x27;)+&#x27;?"', html)

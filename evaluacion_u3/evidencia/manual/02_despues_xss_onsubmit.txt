@@ -1,0 +1,9 @@
+# Prueba manual: misma carga XSS contra el contenedor corregido
+# Laboratorio Docker, cuenta ficticia qa_beto, fecha 2026-11-18 14:55 -0300, código: rama evaluacion-u3 (corregido)
+
+Página: /lists/10/
+Nombre del producto guardado: x'+(document.title='XSS-ejecutado')+'
+Atributo data-confirm (texto, no código):
+  ¿Eliminar x'+(document.title='XSS-ejecutado')+'?
+Título antes del envío: Prueba XSS - Detalle de Lista
+Título después de intentar eliminar: Prueba XSS - Detalle de Lista

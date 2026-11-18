@@ -56,7 +56,7 @@
         >
 
         <label for="list-sort" class="sr-only">Ordenar listas</label>
-        <select id="list-sort" name="sort" class="text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-xs px-3.5 py-2" onchange="this.form.submit()">
+        <select id="list-sort" name="sort" class="text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-xs px-3.5 py-2" data-autosubmit>
             <option value="priority" {% if current_sort == 'priority' %}selected{% endif %}>
                 ⚡ Prioridad (Alta a Baja)
             </option>
@@ -133,7 +133,7 @@
                                 <span class="font-semibold text-slate-700">{{ s_list.purchased_items_count }}/{{ s_list.items_count }} ({{ s_list.completion_percentage }}%)</span>
                             </div>
                             <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                <div class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" style="width: {{ s_list.completion_percentage }}%;"></div>
+                                <div class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" data-width="{{ s_list.completion_percentage }}"></div>
                             </div>
                         </div>
                     {% endif %}
@@ -146,7 +146,7 @@
                                 <span class="font-bold {% if s_list.is_over_budget %}text-rose-600{% else %}text-slate-600{% endif %}">{{ s_list.budget_percentage }}%</span>
                             </div>
                             <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                                <div class="{% if s_list.is_over_budget %}bg-rose-500{% elif s_list.budget_percentage > 80 %}bg-amber-500{% else %}bg-emerald-500{% endif %} h-1.5 rounded-full" style="width: {% if s_list.budget_percentage > 100 %}100{% else %}{{ s_list.budget_percentage }}{% endif %}%;"></div>
+                                <div class="{% if s_list.is_over_budget %}bg-rose-500{% elif s_list.budget_percentage > 80 %}bg-amber-500{% else %}bg-emerald-500{% endif %} h-1.5 rounded-full" data-width="{% if s_list.budget_percentage > 100 %}100{% else %}{{ s_list.budget_percentage }}{% endif %}"></div>
                             </div>
                             {% if s_list.is_over_budget %}
                                 <p class="text-[11px] text-rose-600 font-bold mt-1">⚠️ Excede el presupuesto en {{ s_list.remaining_budget|stringformat:"+d"|slice:"1:"|clp }}</p>
