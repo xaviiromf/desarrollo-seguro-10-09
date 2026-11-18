@@ -1,0 +1,31 @@
+# Secretos y entornos
+.env
+.env.*
+venv/
+.venv/
+# Bases de datos reales y archivos generados
+*.sqlite3
+*.sqlite3-journal
+staticfiles/
+media/
+__pycache__/
+*.pyc
+.coverage
+coverage.xml
+htmlcov/
+.scannerwork/
+node_modules/
+# Ajenos a la construcción
+.git/
+.gitignore
+.dockerignore
+Dockerfile
+compose.yaml
+evaluacion_u2/
+evaluacion_u3/
+*.md
+init_data.py
+pythonanywhere_wsgi.py
+sonar-project.properties
+.coveragerc
+requirements-dev.txt

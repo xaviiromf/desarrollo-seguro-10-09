@@ -1,0 +1,24 @@
+# Comandos: docker compose ps; curl al puerto publicado   (fecha: 2026-11-18 14:43 -0300)
+
+NAME                   IMAGE                 COMMAND                  SERVICE   CREATED              STATUS                        PORTS
+django-project-web-1   supermercado-lab:u3   "/app/docker/entrypo…"   web       About a minute ago   Up About a minute (healthy)   127.0.0.1:8000->8000/tcp
+
+$ curl -sI http://127.0.0.1:8000/login/
+HTTP/1.1 200 OK
+Server: gunicorn
+Connection: close
+Content-Type: text/html; charset=utf-8
+Expires: Wed, 18 Nov 2026 17:43:47 GMT
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate, private
+Vary: Cookie
+X-Frame-Options: DENY
+Content-Length: 5125
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
+
+$ curl -s -o /dev/null -w "%{http_code} %{redirect_url}" http://127.0.0.1:8000/   (ruta privada sin sesión)
+302 http://127.0.0.1:8000/login/?next=/
+
+$ ss -ltn | grep 8000   (puerto escuchando solo en 127.0.0.1)
+LISTEN 0      4096            127.0.0.1:8000       0.0.0.0:*
