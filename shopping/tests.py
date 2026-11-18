@@ -405,3 +405,136 @@ class ShoppingItemValidationTests(TestCase):
         self.assertIn('quantity', response.context['form'].errors)
         item.refresh_from_db()
         self.assertEqual(item.quantity, 2)
+
+
+class AuthenticationAndAuthorizationTests(TestCase):
+    """
+    Evaluación 3, etapa 2: login, logout con CSRF, rutas privadas y permisos por usuario.
+
+    Matriz de acceso: cada usuario autenticado consulta y modifica solo sus listas y productos;
+    un anónimo no accede a ninguna ruta del CRUD; el panel /admin/ exige is_staff.
+    """
+
+    def setUp(self):
+        self.owner = User.objects.create_user(username='duenio', password='clave-dueno-2026')
+        self.intruder = User.objects.create_user(username='intruso', password='clave-intruso-2026')
+        self.shopping_list = ShoppingList.objects.create(user=self.owner, name='Lista privada')
+        self.item = ShoppingItem.objects.create(shopping_list=self.shopping_list, name='Leche', quantity=2, unit_price=1000)
+
+    # --- Login y logout ---
+    def test_login_valido_redirige_y_crea_sesion(self):
+        response = self.client.post(reverse('login'), {'username': 'duenio', 'password': 'clave-dueno-2026'})
+        self.assertRedirects(response, reverse('shopping:list_index'), fetch_redirect_response=False)
+        self.assertIn('_auth_user_id', self.client.session)
+
+    def test_login_invalido_rechazado_sin_sesion(self):
+        response = self.client.post(reverse('login'), {'username': 'duenio', 'password': 'incorrecta'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'].errors)
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_logout_por_get_no_permitido(self):
+        self.client.force_login(self.owner)
+        response = self.client.get(reverse('logout'))
+        self.assertEqual(response.status_code, 405)
+        self.assertIn('_auth_user_id', self.client.session)
+
+    def test_logout_por_post_sin_csrf_rechazado(self):
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(self.owner)
+        response = client.post(reverse('logout'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_logout_por_post_con_csrf_cierra_sesion(self):
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(self.owner)
+        client.get(reverse('shopping:list_index'))
+        token = client.cookies['csrftoken'].value
+        response = client.post(reverse('logout'), {'csrfmiddlewaretoken': token})
+        self.assertEqual(response.status_code, 302)
+        self.assertNotIn('_auth_user_id', client.session)
+
+    # --- Anónimo: rutas privadas por URL directa ---
+    def test_anonimo_redirigido_al_login_en_rutas_privadas(self):
+        rutas = [
+            reverse('shopping:list_index'),
+            reverse('shopping:list_create'),
+            reverse('shopping:list_detail', kwargs={'pk': self.shopping_list.pk}),
+            reverse('shopping:list_update', kwargs={'pk': self.shopping_list.pk}),
+            reverse('shopping:list_export_csv', kwargs={'pk': self.shopping_list.pk}),
+            reverse('shopping:item_update', kwargs={'pk': self.item.pk}),
+        ]
+        for url in rutas:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(response['Location'].startswith(reverse('login')))
+
+    def test_anonimo_no_puede_escribir(self):
+        self.client.post(reverse('shopping:list_create'), {'name': 'Intrusa', 'priority': 2})
+        self.client.post(reverse('shopping:list_delete', kwargs={'pk': self.shopping_list.pk}))
+        self.client.post(reverse('shopping:item_toggle', kwargs={'pk': self.item.pk}))
+        self.assertFalse(ShoppingList.objects.filter(name='Intrusa').exists())
+        self.assertTrue(ShoppingList.objects.filter(pk=self.shopping_list.pk).exists())
+        self.item.refresh_from_db()
+        self.assertFalse(self.item.is_purchased)
+
+    def test_admin_exige_staff(self):
+        self.client.force_login(self.owner)
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/admin/login/', response['Location'])
+
+    # --- Otro usuario autenticado: consulta y escritura sobre datos ajenos ---
+    def test_intruso_no_puede_consultar_ni_modificar_lista_ajena(self):
+        self.client.force_login(self.intruder)
+        pk = self.shopping_list.pk
+        casos = [
+            ('get', reverse('shopping:list_detail', kwargs={'pk': pk}), {}),
+            ('get', reverse('shopping:list_update', kwargs={'pk': pk}), {}),
+            ('get', reverse('shopping:list_export_csv', kwargs={'pk': pk}), {}),
+            ('post', reverse('shopping:list_update', kwargs={'pk': pk}), {'name': 'Hackeada', 'priority': 1}),
+            ('post', reverse('shopping:list_delete', kwargs={'pk': pk}), {}),
+            ('post', reverse('shopping:list_duplicate', kwargs={'pk': pk}), {}),
+            ('post', reverse('shopping:list_bulk_toggle', kwargs={'pk': pk}), {'action': 'check_all'}),
+            ('post', reverse('shopping:list_clear_purchased', kwargs={'pk': pk}), {}),
+            ('post', reverse('shopping:item_create', kwargs={'list_pk': pk}), {'name': 'Colado', 'quantity': 1}),
+        ]
+        for method, url, data in casos:
+            with self.subTest(method=method, url=url):
+                response = getattr(self.client, method)(url, data)
+                self.assertEqual(response.status_code, 404)
+        self.shopping_list.refresh_from_db()
+        self.assertEqual(self.shopping_list.name, 'Lista privada')
+        self.assertEqual(ShoppingList.objects.filter(user=self.intruder).count(), 0)
+        self.assertFalse(ShoppingItem.objects.filter(name='Colado').exists())
+
+    def test_intruso_no_puede_modificar_producto_ajeno(self):
+        self.client.force_login(self.intruder)
+        pk = self.item.pk
+        casos = [
+            ('get', reverse('shopping:item_update', kwargs={'pk': pk}), {}),
+            ('post', reverse('shopping:item_update', kwargs={'pk': pk}), {'name': 'Cambiado', 'quantity': 5}),
+            ('post', reverse('shopping:item_toggle', kwargs={'pk': pk}), {}),
+            ('post', reverse('shopping:item_delete', kwargs={'pk': pk}), {}),
+        ]
+        for method, url, data in casos:
+            with self.subTest(method=method, url=url):
+                response = getattr(self.client, method)(url, data)
+                self.assertEqual(response.status_code, 404)
+        self.item.refresh_from_db()
+        self.assertEqual((self.item.name, self.item.quantity, self.item.is_purchased), ('Leche', 2, False))
+
+    def test_lista_principal_muestra_solo_listas_propias(self):
+        ShoppingList.objects.create(user=self.intruder, name='Lista del intruso')
+        self.client.force_login(self.intruder)
+        response = self.client.get(reverse('shopping:list_index'))
+        self.assertContains(response, 'Lista del intruso')
+        self.assertNotContains(response, 'Lista privada')
+
+    # --- Defecto corregido: el mensaje de eliminación nunca se mostraba (DeleteView usa form_valid) ---
+    def test_eliminar_producto_propio_muestra_mensaje(self):
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse('shopping:item_delete', kwargs={'pk': self.item.pk}), follow=True)
+        self.assertFalse(ShoppingItem.objects.filter(pk=self.item.pk).exists())
+        self.assertIn('eliminado', ' '.join(str(m) for m in response.context['messages']))

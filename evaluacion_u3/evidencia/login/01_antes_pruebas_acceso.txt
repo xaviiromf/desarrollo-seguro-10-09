@@ -1,0 +1,31 @@
+# Comando: python manage.py test shopping.tests.AuthenticationAndAuthorizationTests -v 2
+# Fecha: 2026-11-18 14:39 -0300 | código: main (versión de la Evaluación 2), con las pruebas nuevas copiadas
+
+Found 12 test(s).
+test_anonimo_no_puede_escribir (shopping.tests.AuthenticationAndAuthorizationTests.test_anonimo_no_puede_escribir) ... ok
+test_anonimo_redirigido_al_login_en_rutas_privadas (shopping.tests.AuthenticationAndAuthorizationTests.test_anonimo_redirigido_al_login_en_rutas_privadas) ... ok
+test_eliminar_producto_propio_muestra_mensaje (shopping.tests.AuthenticationAndAuthorizationTests.test_eliminar_producto_propio_muestra_mensaje) ... FAIL
+test_intruso_no_puede_consultar_ni_modificar_lista_ajena (shopping.tests.AuthenticationAndAuthorizationTests.test_intruso_no_puede_consultar_ni_modificar_lista_ajena) ... ok
+test_intruso_no_puede_modificar_producto_ajeno (shopping.tests.AuthenticationAndAuthorizationTests.test_intruso_no_puede_modificar_producto_ajeno) ... ok
+test_lista_principal_muestra_solo_listas_propias (shopping.tests.AuthenticationAndAuthorizationTests.test_lista_principal_muestra_solo_listas_propias) ... ok
+test_login_invalido_rechazado_sin_sesion (shopping.tests.AuthenticationAndAuthorizationTests.test_login_invalido_rechazado_sin_sesion) ... ok
+test_login_valido_redirige_y_crea_sesion (shopping.tests.AuthenticationAndAuthorizationTests.test_login_valido_redirige_y_crea_sesion) ... ok
+test_logout_por_get_no_permitido (shopping.tests.AuthenticationAndAuthorizationTests.test_logout_por_get_no_permitido) ... ok
+test_logout_por_post_con_csrf_cierra_sesion (shopping.tests.AuthenticationAndAuthorizationTests.test_logout_por_post_con_csrf_cierra_sesion) ... ok
+test_logout_por_post_sin_csrf_rechazado (shopping.tests.AuthenticationAndAuthorizationTests.test_logout_por_post_sin_csrf_rechazado) ... ok
+
+======================================================================
+FAIL: test_eliminar_producto_propio_muestra_mensaje (shopping.tests.AuthenticationAndAuthorizationTests.test_eliminar_producto_propio_muestra_mensaje)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "shopping/tests.py", line 540, in test_eliminar_producto_propio_muestra_mensaje
+    self.assertIn('eliminado', ' '.join(str(m) for m in response.context['messages']))
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'eliminado' not found in ''
+
+----------------------------------------------------------------------
+Ran 12 tests in 9.101s
+
+FAILED (failures=1)
+ OK
+System check identified no issues (0 silenced).
