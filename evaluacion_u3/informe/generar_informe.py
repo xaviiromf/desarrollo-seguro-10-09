@@ -75,6 +75,11 @@ def s1():
 <h2>1. Identificación y alcance</h2>
 <p>Continuamos el CRUD de la Evaluación 2: una aplicación Django en la que cada usuario crea listas de compras y les agrega productos con cantidad y precio en pesos chilenos. En esta evaluación incorporamos y verificamos la autenticación, atendimos los hallazgos pendientes de SonarQube, ejecutamos la aplicación con Docker Compose y analizamos su tráfico con OWASP ZAP, corrigiendo lo confirmado.</p>
 {tabla(["Elemento", "Detalle"], [
+    ["Integrantes", "Xavier Romero · Alejandro Figueroa (aportes en la sección 7)"],
+    ["CRUD", "Listas de compras «PastelMarket», desarrollado y publicado en la Evaluación 2"],
+    ["Repositorio", f'<a href="{REPO}">{REPO}</a> (público)'],
+    ["Pull Request", f'<a href="{PR}">{PR}</a>'],
+    ["Versión revisada", f"Rama <code>evaluacion-u3</code>, commit <code>{COMMIT_CODIGO}</code>; imagen Docker <code>supermercado-lab:u3</code>"],
     ["Aplicación", "Django 6.1.2 · Python 3.12 · SQLite · gunicorn 26.2.0 · WhiteNoise 6.12.0"],
     ["Laboratorio", "Docker Compose en el equipo del equipo, publicado solo en <code>http://127.0.0.1:8000</code>"],
     ["Cuentas", "Ficticias: <code>qa_ana</code> y <code>qa_beto</code>, creadas con <code>manage.py crear_cuentas_prueba</code>; contraseñas solo en <code>.env.lab</code> (no versionado)"],
