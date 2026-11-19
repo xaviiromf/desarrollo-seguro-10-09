@@ -355,6 +355,8 @@ def main():
     vacio = "<w:p/>"
     nuevo = "".join(portada) + salto + "".join(doc.cuerpo) + salto + vacio * 6 + "".join(contraportada) + sect
     x = x[:ini_body] + nuevo + x[fin_body:]
+    # Sin negritas en todo el documento (decisión de formato del equipo).
+    x = re.sub(r'<w:b(?:Cs)?(?:\s+w:val="[^"]*")?\s*/>', '', x)
     open(ruta_doc, "w", encoding="utf-8").write(x)
 
     # --- medios y relaciones
