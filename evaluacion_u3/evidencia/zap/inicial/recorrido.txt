@@ -1,0 +1,27 @@
+GET /login/
+POST login
+GET /
+GET /?sort=newest&q=Lista
+GET /lists/new/
+POST crear lista
+(detalle) /lists/3/
+POST agregar producto
+POST agregar producto con cantidad 0
+POST marcar comprado
+GET /lists/3/?status=pending
+GET /items/3/edit/
+POST editar producto
+GET /lists/3/edit/
+POST editar lista
+POST marcar todos
+GET /lists/3/export-csv/
+GET /lists/3/
+POST duplicar lista
+GET /lists/3/
+POST eliminar comprados
+GET /lists/3/delete/
+POST eliminar lista
+GET /
+POST logout
+GET /register/
+GET /lists/3/

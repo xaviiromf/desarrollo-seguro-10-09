@@ -1,0 +1,429 @@
+{
+	"@programName": "ZAP",
+	"@version": "2.17.0",
+	"@generated": "mi\u00E9, 18 nov 2026 20:47:13",
+	"created": "2026-11-18T23:47:13.339845653Z",
+	"insights":[
+		{
+			"level": "Bajo",
+			"reason": "Advertencia",
+			"site": "",
+			"key": "insight.log.warn",
+			"description": "ZAP warnings logged - see the zap.log file for details",
+			"statistic": "109"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.code.2xx",
+			"description": "Percentage of responses with status code 2xx",
+			"statistic": "69"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.code.3xx",
+			"description": "Percentage of responses with status code 3xx",
+			"statistic": "30"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "Percentage of endpoints with content type text/css",
+			"statistic": "7"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.ctype.text/csv",
+			"description": "Percentage of endpoints with content type text/csv",
+			"statistic": "3"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "Percentage of endpoints with content type text/html",
+			"statistic": "82"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.ctype.text/javascript",
+			"description": "Percentage of endpoints with content type text/javascript",
+			"statistic": "7"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.method.GET",
+			"description": "Percentage of endpoints with method GET",
+			"statistic": "60"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.method.POST",
+			"description": "Percentage of endpoints with method POST",
+			"statistic": "39"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.total",
+			"description": "Count of total endpoints",
+			"statistic": "28"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.response.slow",
+			"description": "Percentage of slow responses",
+			"statistic": "2"
+		}
+	],
+	"site":[ 
+		{
+			"@name": "http://127.0.0.1:8000",
+			"@host": "127.0.0.1",
+			"@port": "8000",
+			"@ssl": "false",
+			"alerts": [ 
+				{
+					"pluginid": "10031",
+					"alertRef": "10031",
+					"alert": "Atributo de elemento HTML controlable por el usuario (XSS potencial)",
+					"name": "Atributo de elemento HTML controlable por el usuario (XSS potencial)",
+					"riskcode": "0",
+					"confidence": "1",
+					"riskdesc": "Informativo (Baja)",
+					"desc": "<p>Esta comprobaci\u00F3n examina la entrada proporcionada por el usuario en par\u00E1metros de cadenas de consulta y datos POST para identificar d\u00F3nde podr\u00EDan estar controlados ciertos valores de atributos HTML. Esto proporciona detecci\u00F3n de puntos calientes para XSS (cross-site scripting) que requerir\u00E1n una revisi\u00F3n adicional por parte de un analista de seguridad para determinar la explotabilidad.</p>",
+					"instances":[ 
+						{
+							"id": "6",
+							"uri": "http://127.0.0.1:8000/?sort=newest&q=Lista",
+							"nodeName": "http:\/\/127.0.0.1:8000\/ (q,sort)",
+							"method": "GET",
+							"param": "q",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "Se han encontrado valores de atributos HTML controlados por el usuario. Intente inyectar caracteres especiales para ver si es posible XSS. La p\u00E1gina en la siguiente URL parece incluir una entrada de usuario en una etiqueta [input] atributo [value] La entrada de usuario encontrada era:q=Lista El valor controlado por el usuario era:lista."
+						},
+						{
+							"id": "7",
+							"uri": "http://127.0.0.1:8000/?sort=newest&q=Lista",
+							"nodeName": "http:\/\/127.0.0.1:8000\/ (q,sort)",
+							"method": "GET",
+							"param": "sort",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "Se han encontrado valores de atributos HTML controlados por el usuario. Intente inyectar caracteres especiales para ver si es posible XSS. La p\u00E1gina en la siguiente URL parece incluir una entrada de usuario en una etiqueta [option] atributo [value] La entrada de usuario encontrada era:sort=newest El valor controlado por el usuario era:newest."
+						}
+					],
+					"count": "2",
+					"systemic": false,
+					"solution": "<p>V\u00E1lida la entrada y sanea la salida antes de escribirla en cualquier atributo HTML.</p>",
+					"otherinfo": "<p>Se han encontrado valores de atributos HTML controlados por el usuario. Intente inyectar caracteres especiales para ver si es posible XSS. La p\u00E1gina en la siguiente URL parece incluir una entrada de usuario en una etiqueta [input] atributo [value] La entrada de usuario encontrada era:q=Lista El valor controlado por el usuario era:lista.</p>",
+					"reference": "<p>https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html</p>",
+					"cweid": "20",
+					"wascid": "20",
+					"sourceid": "15"
+				},
+				{
+					"pluginid": "10111",
+					"alertRef": "10111",
+					"alert": "Petici\u00F3n de Autenticaci\u00F3n Identificada",
+					"name": "Petici\u00F3n de Autenticaci\u00F3n Identificada",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "Informativo (Alta)",
+					"desc": "<p>La petici\u00F3n en cuesti\u00F3n se ha identificado como una petici\u00F3n de autenticaci\u00F3n. El campo \"Otra informaci\u00F3n\" contiene un conjunto de l\u00EDneas key=vvalue que identifican cualquier campo relevante. Si la solicitud est\u00E1 en un contexto que tiene un m\u00E9todo de autenticaci\u00F3n configurado como \"Detecci\u00F3n autom\u00E1tica\", esta regla cambiar\u00E1 la autenticaci\u00F3n para que coincida con la petici\u00F3n identificada.</p>",
+					"instances":[ 
+						{
+							"id": "0",
+							"uri": "http://127.0.0.1:8000/login/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/ ()(csrfmiddlewaretoken,password,username)",
+							"method": "POST",
+							"param": "username",
+							"attack": "",
+							"evidence": "password",
+							"otherinfo": "userParam=username\nuserValue=qa_ana\npasswordParam=password\nreferer=http://127.0.0.1:8000/login/\ncsrfToken=csrfmiddlewaretoken"
+						}
+					],
+					"count": "1",
+					"systemic": false,
+					"solution": "<p>Se trata de una alerta informativa y no de una vulnerabilidad, por lo que no hay nada que corregir.</p>",
+					"otherinfo": "<p>userParam=username</p><p>userValue=qa_ana</p><p>passwordParam=password</p><p>referer=http://127.0.0.1:8000/login/</p><p>csrfToken=csrfmiddlewaretoken</p>",
+					"reference": "<p>https://www.zaproxy.org/docs/desktop/addons/authentication-helper/auth-req-id/</p>",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "12"
+				},
+				{
+					"pluginid": "10112",
+					"alertRef": "10112",
+					"alert": "Respuesta de Gesti\u00F3n de Sesi\u00F3n Identificada",
+					"name": "Respuesta de Gesti\u00F3n de Sesi\u00F3n Identificada",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informativo (Media)",
+					"desc": "<p>Se ha identificado que la respuesta dada contiene un token de gesti\u00F3n de sesi\u00F3n. El campo 'Other Info' contiene un conjunto de tokens de cabecera que pueden utilizarse en el m\u00E9todo Header Based Session Management (gesti\u00F3n de sesi\u00F3n basado en cabecera). Si la petici\u00F3n se encuentra en un contexto que tiene un m\u00E9todo Session Management establecido en \"Auto-Detect\", esta regla cambiar\u00E1 la gesti\u00F3n de sesi\u00F3n para utilizar los tokens identificados.</p>",
+					"instances":[ 
+						{
+							"id": "3",
+							"uri": "http://127.0.0.1:8000/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "8",
+							"uri": "http://127.0.0.1:8000/?sort=newest&q=Lista",
+							"nodeName": "http:\/\/127.0.0.1:8000\/ (q,sort)",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "18",
+							"uri": "http://127.0.0.1:8000/items/15/edit/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/items\/15\/edit\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "11",
+							"uri": "http://127.0.0.1:8000/lists/15/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/15\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "17",
+							"uri": "http://127.0.0.1:8000/lists/15/?status=pending",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/15\/ (status)",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "32",
+							"uri": "http://127.0.0.1:8000/lists/15/delete/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/15\/delete\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "21",
+							"uri": "http://127.0.0.1:8000/lists/15/edit/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/15\/edit\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "28",
+							"uri": "http://127.0.0.1:8000/lists/16/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/16\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "9",
+							"uri": "http://127.0.0.1:8000/lists/new/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/new\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "4",
+							"uri": "http://127.0.0.1:8000/login/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "39",
+							"uri": "http://127.0.0.1:8000/login/?next=/lists/15/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/ (next)",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "38",
+							"uri": "http://127.0.0.1:8000/register/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/register\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "19",
+							"uri": "http://127.0.0.1:8000/items/15/edit/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/items\/15\/edit\/ ()(brand,category,csrfmiddlewaretoken,name,quantity,unit_price)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "24",
+							"uri": "http://127.0.0.1:8000/lists/15/bulk-toggle/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/15\/bulk-toggle\/ ()(action,csrfmiddlewaretoken)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "30",
+							"uri": "http://127.0.0.1:8000/lists/15/clear-purchased/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/15\/clear-purchased\/ ()(csrfmiddlewaretoken)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "33",
+							"uri": "http://127.0.0.1:8000/lists/15/delete/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/15\/delete\/ ()(csrfmiddlewaretoken)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "27",
+							"uri": "http://127.0.0.1:8000/lists/15/duplicate/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/15\/duplicate\/ ()(csrfmiddlewaretoken)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "22",
+							"uri": "http://127.0.0.1:8000/lists/15/edit/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/15\/edit\/ ()(budget_limit,csrfmiddlewaretoken,description,name,priority)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "12",
+							"uri": "http://127.0.0.1:8000/lists/15/items/add/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/15\/items\/add\/ ()(brand,category,csrfmiddlewaretoken,name,quantity,unit_price)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "10",
+							"uri": "http://127.0.0.1:8000/lists/new/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/new\/ ()(budget_limit,csrfmiddlewaretoken,description,name,priority)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "1",
+							"uri": "http://127.0.0.1:8000/login/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/ ()(csrfmiddlewaretoken,password,username)",
+							"method": "POST",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken\ncookie:messages\ncookie:sessionid"
+						},
+						{
+							"id": "36",
+							"uri": "http://127.0.0.1:8000/logout/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/logout\/ ()(csrfmiddlewaretoken)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "2",
+							"uri": "http://127.0.0.1:8000/login/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						}
+					],
+					"count": "23",
+					"systemic": false,
+					"solution": "<p>Se trata de una alerta informativa y no de una vulnerabilidad, por lo que no hay nada que corregir.</p>",
+					"otherinfo": "<p>cookie:csrftoken</p>",
+					"reference": "<p>https://www.zaproxy.org/docs/desktop/addons/authentication-helper/session-mgmt-id/</p>",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "13"
+				}
+			]
+		}
+	],
+	"sequences":[
+	]
+
+}

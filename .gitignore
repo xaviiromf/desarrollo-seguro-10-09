@@ -15,3 +15,9 @@ htmlcov/
 
 # Archivos de bloqueo de LibreOffice
 .~lock.*#
+
+# Laboratorio Docker
+.env.lab
+.env.*
+!.env.example
+!.env.lab.example

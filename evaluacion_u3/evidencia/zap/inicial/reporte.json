@@ -1,0 +1,599 @@
+{
+	"@programName": "ZAP",
+	"@version": "2.17.0",
+	"@generated": "Wed, 18 Nov 2026 14:48:11",
+	"created": "2026-11-18T17:48:11.758905746Z",
+	"insights":[
+		{
+			"level": "Low",
+			"reason": "Warning",
+			"site": "",
+			"key": "insight.log.warn",
+			"description": "ZAP warnings logged - see the zap.log file for details",
+			"statistic": "110"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.code.2xx",
+			"description": "Percentage of responses with status code 2xx",
+			"statistic": "68"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.code.3xx",
+			"description": "Percentage of responses with status code 3xx",
+			"statistic": "31"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "Percentage of endpoints with content type text/css",
+			"statistic": "3"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.ctype.text/csv",
+			"description": "Percentage of endpoints with content type text/csv",
+			"statistic": "3"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "Percentage of endpoints with content type text/html",
+			"statistic": "85"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.ctype.text/javascript",
+			"description": "Percentage of endpoints with content type text/javascript",
+			"statistic": "7"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.method.GET",
+			"description": "Percentage of endpoints with method GET",
+			"statistic": "59"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.method.POST",
+			"description": "Percentage of endpoints with method POST",
+			"statistic": "40"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.endpoint.total",
+			"description": "Count of total endpoints",
+			"statistic": "27"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://127.0.0.1:8000",
+			"key": "insight.response.slow",
+			"description": "Percentage of slow responses",
+			"statistic": "2"
+		}
+	],
+	"site":[ 
+		{
+			"@name": "http://127.0.0.1:8000",
+			"@host": "127.0.0.1",
+			"@port": "8000",
+			"@ssl": "false",
+			"alerts": [ 
+				{
+					"pluginid": "10038",
+					"alertRef": "10038-1",
+					"alert": "Content Security Policy (CSP) Header Not Set",
+					"name": "Content Security Policy (CSP) Header Not Set",
+					"riskcode": "2",
+					"confidence": "3",
+					"riskdesc": "Medium (High)",
+					"desc": "<p>Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that browsers should be allowed to load on that page \u2014 covered types are JavaScript, CSS, HTML frames, fonts, images and embeddable objects such as Java applets, ActiveX, audio and video files.</p>",
+					"instances":[ 
+						{
+							"id": "8",
+							"uri": "http://127.0.0.1:8000/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "14",
+							"uri": "http://127.0.0.1:8000/?sort=newest&q=Lista",
+							"nodeName": "http:\/\/127.0.0.1:8000\/ (q,sort)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "23",
+							"uri": "http://127.0.0.1:8000/lists/3/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "19",
+							"uri": "http://127.0.0.1:8000/lists/new/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/new\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "1",
+							"uri": "http://127.0.0.1:8000/login/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						}
+					],
+					"count": "5",
+					"systemic": true,
+					"solution": "<p>Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header.</p>",
+					"otherinfo": "",
+					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP</p><p>https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html</p><p>https://www.w3.org/TR/CSP/</p><p>https://w3c.github.io/webappsec-csp/</p><p>https://web.dev/articles/csp</p><p>https://caniuse.com/#feat=contentsecuritypolicy</p><p>https://content-security-policy.com/</p>",
+					"cweid": "693",
+					"wascid": "15",
+					"sourceid": "15"
+				},
+				{
+					"pluginid": "10098",
+					"alertRef": "10098",
+					"alert": "Cross-Domain Misconfiguration",
+					"name": "Cross-Domain Misconfiguration",
+					"riskcode": "2",
+					"confidence": "2",
+					"riskdesc": "Medium (Medium)",
+					"desc": "<p>Web browser data loading may be possible, due to a Cross Origin Resource Sharing (CORS) misconfiguration on the web server.</p>",
+					"instances":[ 
+						{
+							"id": "2",
+							"uri": "http://127.0.0.1:8000/static/css/dist/styles.css",
+							"nodeName": "http:\/\/127.0.0.1:8000\/static\/css\/dist\/styles.css",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Access-Control-Allow-Origin: *",
+							"otherinfo": "The CORS misconfiguration on the web server permits cross-domain read requests from arbitrary third party domains, using unauthenticated APIs on this domain. Web browser implementations do not permit arbitrary third parties to read the response from authenticated APIs, however. This reduces the risk somewhat. This misconfiguration could be used by an attacker to access data that is available in an unauthenticated manner, but which uses some other form of security, such as IP address white-listing."
+						},
+						{
+							"id": "0",
+							"uri": "http://127.0.0.1:8000/static/shopping/js/calculator.js",
+							"nodeName": "http:\/\/127.0.0.1:8000\/static\/shopping\/js\/calculator.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Access-Control-Allow-Origin: *",
+							"otherinfo": "The CORS misconfiguration on the web server permits cross-domain read requests from arbitrary third party domains, using unauthenticated APIs on this domain. Web browser implementations do not permit arbitrary third parties to read the response from authenticated APIs, however. This reduces the risk somewhat. This misconfiguration could be used by an attacker to access data that is available in an unauthenticated manner, but which uses some other form of security, such as IP address white-listing."
+						}
+					],
+					"count": "2",
+					"systemic": false,
+					"solution": "<p>Ensure that sensitive data is not available in an unauthenticated manner (using IP address white-listing, for instance).</p><p>Configure the \"Access-Control-Allow-Origin\" HTTP header to a more restrictive set of domains, or remove all CORS headers entirely, to allow the web browser to enforce the Same Origin Policy (SOP) in a more restrictive manner.</p>",
+					"otherinfo": "<p>The CORS misconfiguration on the web server permits cross-domain read requests from arbitrary third party domains, using unauthenticated APIs on this domain. Web browser implementations do not permit arbitrary third parties to read the response from authenticated APIs, however. This reduces the risk somewhat. This misconfiguration could be used by an attacker to access data that is available in an unauthenticated manner, but which uses some other form of security, such as IP address white-listing.</p>",
+					"reference": "<p>https://vulncat.fortify.com/en/detail?category=HTML5&subcategory=Overly%20Permissive%20CORS%20Policy</p>",
+					"cweid": "264",
+					"wascid": "14",
+					"sourceid": "4"
+				},
+				{
+					"pluginid": "10010",
+					"alertRef": "10010",
+					"alert": "Cookie No HttpOnly Flag",
+					"name": "Cookie No HttpOnly Flag",
+					"riskcode": "1",
+					"confidence": "2",
+					"riskdesc": "Low (Medium)",
+					"desc": "<p>A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible.</p>",
+					"instances":[ 
+						{
+							"id": "9",
+							"uri": "http://127.0.0.1:8000/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "Set-Cookie: csrftoken",
+							"otherinfo": ""
+						},
+						{
+							"id": "15",
+							"uri": "http://127.0.0.1:8000/?sort=newest&q=Lista",
+							"nodeName": "http:\/\/127.0.0.1:8000\/ (q,sort)",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "Set-Cookie: csrftoken",
+							"otherinfo": ""
+						},
+						{
+							"id": "20",
+							"uri": "http://127.0.0.1:8000/lists/new/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/new\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "Set-Cookie: csrftoken",
+							"otherinfo": ""
+						},
+						{
+							"id": "3",
+							"uri": "http://127.0.0.1:8000/login/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "Set-Cookie: csrftoken",
+							"otherinfo": ""
+						},
+						{
+							"id": "5",
+							"uri": "http://127.0.0.1:8000/login/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/ ()(csrfmiddlewaretoken,password,username)",
+							"method": "POST",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "Set-Cookie: csrftoken",
+							"otherinfo": ""
+						}
+					],
+					"count": "5",
+					"systemic": true,
+					"solution": "<p>Ensure that the HttpOnly flag is set for all cookies.</p>",
+					"otherinfo": "",
+					"reference": "<p>https://owasp.org/www-community/HttpOnly</p>",
+					"cweid": "1004",
+					"wascid": "13",
+					"sourceid": "15"
+				},
+				{
+					"pluginid": "10111",
+					"alertRef": "10111",
+					"alert": "Authentication Request Identified",
+					"name": "Authentication Request Identified",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "Informational (High)",
+					"desc": "<p>The given request has been identified as an authentication request. The 'Other Info' field contains a set of key=value lines which identify any relevant fields. If the request is in a context which has an Authentication Method set to \"Auto-Detect\" then this rule will change the authentication to match the request identified.</p>",
+					"instances":[ 
+						{
+							"id": "6",
+							"uri": "http://127.0.0.1:8000/login/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/ ()(csrfmiddlewaretoken,password,username)",
+							"method": "POST",
+							"param": "username",
+							"attack": "",
+							"evidence": "password",
+							"otherinfo": "userParam=username\nuserValue=qa_ana\npasswordParam=password\nreferer=http://127.0.0.1:8000/login/"
+						}
+					],
+					"count": "1",
+					"systemic": false,
+					"solution": "<p>This is an informational alert rather than a vulnerability and so there is nothing to fix.</p>",
+					"otherinfo": "<p>userParam=username</p><p>userValue=qa_ana</p><p>passwordParam=password</p><p>referer=http://127.0.0.1:8000/login/</p>",
+					"reference": "<p>https://www.zaproxy.org/docs/desktop/addons/authentication-helper/auth-req-id/</p>",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "14"
+				},
+				{
+					"pluginid": "10112",
+					"alertRef": "10112",
+					"alert": "Session Management Response Identified",
+					"name": "Session Management Response Identified",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The given response has been identified as containing a session management token. The 'Other Info' field contains a set of header tokens that can be used in the Header Based Session Management Method. If the request is in a context which has a Session Management Method set to \"Auto-Detect\" then this rule will change the session management to use the tokens identified.</p>",
+					"instances":[ 
+						{
+							"id": "10",
+							"uri": "http://127.0.0.1:8000/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "18",
+							"uri": "http://127.0.0.1:8000/?sort=newest&q=Lista",
+							"nodeName": "http:\/\/127.0.0.1:8000\/ (q,sort)",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "42",
+							"uri": "http://127.0.0.1:8000/items/3/edit/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/items\/3\/edit\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "25",
+							"uri": "http://127.0.0.1:8000/lists/3/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "39",
+							"uri": "http://127.0.0.1:8000/lists/3/?status=pending",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/ (status)",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "74",
+							"uri": "http://127.0.0.1:8000/lists/3/delete/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/delete\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "49",
+							"uri": "http://127.0.0.1:8000/lists/3/edit/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/edit\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "64",
+							"uri": "http://127.0.0.1:8000/lists/4/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/4\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "21",
+							"uri": "http://127.0.0.1:8000/lists/new/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/new\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "4",
+							"uri": "http://127.0.0.1:8000/login/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "91",
+							"uri": "http://127.0.0.1:8000/login/?next=/lists/3/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/ (next)",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "88",
+							"uri": "http://127.0.0.1:8000/register/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/register\/",
+							"method": "GET",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken"
+						},
+						{
+							"id": "43",
+							"uri": "http://127.0.0.1:8000/items/3/edit/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/items\/3\/edit\/ ()(brand,category,csrfmiddlewaretoken,name,quantity,unit_price)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "54",
+							"uri": "http://127.0.0.1:8000/lists/3/bulk-toggle/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/bulk-toggle\/ ()(action,csrfmiddlewaretoken)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "68",
+							"uri": "http://127.0.0.1:8000/lists/3/clear-purchased/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/clear-purchased\/ ()(csrfmiddlewaretoken)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "75",
+							"uri": "http://127.0.0.1:8000/lists/3/delete/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/delete\/ ()(csrfmiddlewaretoken)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "61",
+							"uri": "http://127.0.0.1:8000/lists/3/duplicate/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/duplicate\/ ()(csrfmiddlewaretoken)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "50",
+							"uri": "http://127.0.0.1:8000/lists/3/edit/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/edit\/ ()(budget_limit,csrfmiddlewaretoken,description,name,priority)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "26",
+							"uri": "http://127.0.0.1:8000/lists/3/items/add/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/3\/items\/add\/ ()(brand,category,csrfmiddlewaretoken,name,quantity,unit_price)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "22",
+							"uri": "http://127.0.0.1:8000/lists/new/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/lists\/new\/ ()(budget_limit,csrfmiddlewaretoken,description,name,priority)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						},
+						{
+							"id": "7",
+							"uri": "http://127.0.0.1:8000/login/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/login\/ ()(csrfmiddlewaretoken,password,username)",
+							"method": "POST",
+							"param": "csrftoken",
+							"attack": "",
+							"evidence": "csrftoken",
+							"otherinfo": "cookie:csrftoken\ncookie:messages\ncookie:sessionid"
+						},
+						{
+							"id": "82",
+							"uri": "http://127.0.0.1:8000/logout/",
+							"nodeName": "http:\/\/127.0.0.1:8000\/logout\/ ()(csrfmiddlewaretoken)",
+							"method": "POST",
+							"param": "messages",
+							"attack": "",
+							"evidence": "messages",
+							"otherinfo": "cookie:messages"
+						}
+					],
+					"count": "22",
+					"systemic": false,
+					"solution": "<p>This is an informational alert rather than a vulnerability and so there is nothing to fix.</p>",
+					"otherinfo": "<p>cookie:csrftoken</p>",
+					"reference": "<p>https://www.zaproxy.org/docs/desktop/addons/authentication-helper/session-mgmt-id/</p>",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "15"
+				},
+				{
+					"pluginid": "10031",
+					"alertRef": "10031",
+					"alert": "User Controllable HTML Element Attribute (Potential XSS)",
+					"name": "User Controllable HTML Element Attribute (Potential XSS)",
+					"riskcode": "0",
+					"confidence": "1",
+					"riskdesc": "Informational (Low)",
+					"desc": "<p>This check looks at user-supplied input in query string parameters and POST data to identify where certain HTML attribute values might be controlled. This provides hot-spot detection for XSS (cross-site scripting) that will require further review by a security analyst to determine exploitability.</p>",
+					"instances":[ 
+						{
+							"id": "16",
+							"uri": "http://127.0.0.1:8000/?sort=newest&q=Lista",
+							"nodeName": "http:\/\/127.0.0.1:8000\/ (q,sort)",
+							"method": "GET",
+							"param": "q",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttp://127.0.0.1:8000/?sort=newest&q=Lista\n\nappears to include user input in:\na(n) [input] tag [value] attribute\n\nThe user input found was:\nq=Lista\n\nThe user-controlled value was:\nlista"
+						},
+						{
+							"id": "17",
+							"uri": "http://127.0.0.1:8000/?sort=newest&q=Lista",
+							"nodeName": "http:\/\/127.0.0.1:8000\/ (q,sort)",
+							"method": "GET",
+							"param": "sort",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttp://127.0.0.1:8000/?sort=newest&q=Lista\n\nappears to include user input in:\na(n) [option] tag [value] attribute\n\nThe user input found was:\nsort=newest\n\nThe user-controlled value was:\nnewest"
+						}
+					],
+					"count": "2",
+					"systemic": false,
+					"solution": "<p>Validate all input and sanitize output it before writing to any HTML attributes.</p>",
+					"otherinfo": "<p>User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:</p><p></p><p>http://127.0.0.1:8000/?sort=newest&q=Lista</p><p></p><p>appears to include user input in:</p><p>a(n) [input] tag [value] attribute</p><p></p><p>The user input found was:</p><p>q=Lista</p><p></p><p>The user-controlled value was:</p><p>lista</p>",
+					"reference": "<p>https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html</p>",
+					"cweid": "20",
+					"wascid": "20",
+					"sourceid": "17"
+				}
+			]
+		}
+	],
+	"sequences":[
+	]
+
+}

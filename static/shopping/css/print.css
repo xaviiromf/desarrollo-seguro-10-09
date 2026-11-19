@@ -1,0 +1,21 @@
+/* Estilos de impresión de la lista (antes en un <style> en línea, incompatible con la CSP). */
+@media print {
+    header, footer, aside, #toast-notification, .no-print {
+        display: none !important;
+    }
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+    .lg\:col-span-2 {
+        width: 100% !important;
+    }
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+    th, td {
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 6px 8px !important;
+    }
+}

@@ -1,0 +1,10 @@
+# Verificación manual de la alerta 10031 (User Controllable HTML Element Attribute), 2026-11-18 14:56 -0300
+# Petición: GET /?q="><script>alert(1)</script>&sort="onmouseover="alert(1)   (sesión de qa_ana, laboratorio Docker)
+
+## Cómo vuelve el parámetro q dentro del HTML:
+value="&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;"
+
+## ¿Aparece la etiqueta <script> sin escapar?
+0
+## ¿Aparece el atributo onmouseover inyectado?
+0

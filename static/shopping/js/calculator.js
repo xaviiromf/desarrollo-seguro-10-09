@@ -10,6 +10,34 @@ function formatCLP(amount) {
     return '$' + clpFormatter.format(Math.round(amount));
 }
 
+// Tacha o destacha el nombre usando nodos de texto: nunca innerHTML con datos del usuario (evita XSS en el DOM).
+function applyPurchasedState(row, isPurchased) {
+    const nameCell = row.querySelector('.item-name-cell');
+    if (!nameCell) return;
+    const name = nameCell.textContent.trim();
+    if (isPurchased) {
+        const strike = document.createElement('s');
+        strike.textContent = name;
+        nameCell.replaceChildren(strike);
+        row.classList.add('bg-slate-50/70', 'text-slate-400');
+    } else {
+        nameCell.replaceChildren(document.createTextNode(name));
+        row.classList.remove('bg-slate-50/70', 'text-slate-400');
+    }
+}
+
+async function togglePurchased(form) {
+    const response = await fetch(form.getAttribute('action'), {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+        }
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return response.json();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Calculadora reactiva en vivo en el formulario de agregar/editar producto
     const qtyInput = document.getElementById('id_quantity');
@@ -20,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateLiveSubtotal() {
         if (!subtotalDisplay) return;
 
-        const isUnknown = unknownPriceCheckbox && unknownPriceCheckbox.checked;
+        const isUnknown = unknownPriceCheckbox?.checked;
 
         if (priceInput) {
             if (isUnknown) {
@@ -59,42 +87,13 @@ document.addEventListener('DOMContentLoaded', () => {
         toggle.addEventListener('change', async (e) => {
             const form = e.target.closest('form');
             if (!form) return;
-
-            const url = form.getAttribute('action');
             const row = form.closest('tr');
-            const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
-
             try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRFToken': csrfToken,
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && row) {
-                        const nameCell = row.querySelector('.item-name-cell');
-                        if (nameCell) {
-                            if (data.is_purchased) {
-                                if (!nameCell.querySelector('s')) {
-                                    nameCell.innerHTML = `<s>${nameCell.textContent.trim()}</s>`;
-                                }
-                                row.classList.add('bg-slate-50/70', 'text-slate-400');
-                            } else {
-                                if (nameCell.querySelector('s')) {
-                                    nameCell.innerHTML = nameCell.querySelector('s').textContent.trim();
-                                }
-                                row.classList.remove('bg-slate-50/70', 'text-slate-400');
-                            }
-                        }
-                    }
-                } else {
-                    form.submit();
-                }
+                const data = await togglePurchased(form);
+                if (data.success && row) applyPurchasedState(row, data.is_purchased);
             } catch (err) {
+                // Si falla la petición en segundo plano, se envía el formulario normal y el servidor decide.
+                console.warn('No se pudo actualizar en segundo plano:', err);
                 form.submit();
             }
         });

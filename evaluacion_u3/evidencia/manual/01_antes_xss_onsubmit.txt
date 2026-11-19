@@ -1,0 +1,11 @@
+# Prueba manual: XSS almacenado en el atributo onsubmit (templates/shopping/shoppinglist_detail.html:310)
+# Laboratorio Docker, cuenta ficticia qa_beto, fecha 2026-11-18 14:50 -0300, código: línea base (antes de la corrección)
+# La carga solo cambia el título de la pestaña: demuestra ejecución de JavaScript sin dañar nada.
+# Se cancela la confirmación para que la página no navegue y el efecto sea observable.
+
+Página: /lists/7/
+Nombre del producto guardado: x'+(document.title='XSS-ejecutado')+'
+Atributo onsubmit tal como lo interpreta el navegador:
+  return confirm('¿Eliminar x'+(document.title='XSS-ejecutado')+'?');
+Título antes del envío: Prueba XSS - Detalle de Lista
+Título después de intentar eliminar: XSS-ejecutado

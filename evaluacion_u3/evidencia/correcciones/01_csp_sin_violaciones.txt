@@ -1,0 +1,32 @@
+# Recorrido completo en Chromium SIN proxy, contra el contenedor ya corregido, para comprobar que la CSP no rompe la app
+# Fecha: 2026-11-18 14:54 -0300, cuenta ficticia qa_beto
+
+GET /login/
+POST login
+GET /
+GET /?sort=newest&q=Lista
+GET /lists/new/
+POST crear lista
+(detalle) /lists/8/
+POST agregar producto
+POST agregar producto con cantidad 0
+POST marcar comprado
+GET /lists/8/?status=pending
+GET /items/8/edit/
+POST editar producto
+GET /lists/8/edit/
+POST editar lista
+POST marcar todos
+GET /lists/8/export-csv/
+GET /lists/8/
+POST duplicar lista
+GET /lists/8/
+POST eliminar comprados
+GET /lists/8/delete/
+POST eliminar lista
+GET /
+POST logout
+GET /register/
+GET /lists/8/
+
+Violaciones de CSP o errores de JavaScript en el navegador: 0

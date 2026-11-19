@@ -22,6 +22,10 @@ from .forms import (
     UserLoginForm,
 )
 
+# Nombres de rutas reutilizados en redirecciones.
+LIST_INDEX_URL = 'shopping:list_index'
+LIST_DETAIL_URL = 'shopping:list_detail'
+
 
 # ==========================================
 # Autenticación basada en CBV
@@ -51,11 +55,11 @@ class UserRegisterView(CreateView):
     """Vista CBV para el registro de nuevos usuarios."""
     form_class = UserRegistrationForm
     template_name = 'registration/register.html'
-    success_url = reverse_lazy('shopping:list_index')
+    success_url = reverse_lazy(LIST_INDEX_URL)
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect('shopping:list_index')
+            return redirect(LIST_INDEX_URL)
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -191,7 +195,7 @@ class ShoppingListDuplicateView(LoginRequiredMixin, View):
                 is_purchased=False,
             )
         messages.success(request, f"¡Lista duplicada exitosamente como '{new_list.name}'!")
-        return redirect('shopping:list_detail', pk=new_list.pk)
+        return redirect(LIST_DETAIL_URL, pk=new_list.pk)
 
 
 class ShoppingListBulkToggleView(LoginRequiredMixin, View):
@@ -205,7 +209,7 @@ class ShoppingListBulkToggleView(LoginRequiredMixin, View):
         elif action == 'uncheck_all':
             shopping_list.items.update(is_purchased=False)
             messages.info(request, "Todos los productos han sido marcados como pendientes.")
-        return redirect('shopping:list_detail', pk=shopping_list.pk)
+        return redirect(LIST_DETAIL_URL, pk=shopping_list.pk)
 
 
 class ShoppingListExportCSVView(LoginRequiredMixin, View):
@@ -249,7 +253,7 @@ class ShoppingListClearPurchasedView(LoginRequiredMixin, View):
         shopping_list = get_object_or_404(ShoppingList, pk=pk, user=request.user)
         deleted_count, _ = shopping_list.items.filter(is_purchased=True).delete()
         messages.success(request, f"Se eliminaron {deleted_count} producto(s) comprados de la lista.")
-        return redirect('shopping:list_detail', pk=shopping_list.pk)
+        return redirect(LIST_DETAIL_URL, pk=shopping_list.pk)
 
 
 
@@ -266,7 +270,7 @@ class ShoppingListCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('shopping:list_detail', kwargs={'pk': self.object.pk})
+        return reverse(LIST_DETAIL_URL, kwargs={'pk': self.object.pk})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -289,7 +293,7 @@ class ShoppingListUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('shopping:list_detail', kwargs={'pk': self.object.pk})
+        return reverse(LIST_DETAIL_URL, kwargs={'pk': self.object.pk})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -302,14 +306,15 @@ class ShoppingListDeleteView(LoginRequiredMixin, DeleteView):
     """Elimina una lista de compras del usuario logueado."""
     model = ShoppingList
     template_name = 'shopping/shoppinglist_confirm_delete.html'
-    success_url = reverse_lazy('shopping:list_index')
+    success_url = reverse_lazy(LIST_INDEX_URL)
 
     def get_queryset(self):
         return ShoppingList.objects.filter(user=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
-        messages.success(request, "Lista de compras eliminada correctamente.")
-        return super().delete(request, *args, **kwargs)
+    def form_valid(self, form):
+        # Desde Django 4, DeleteView procesa el POST en form_valid(); delete() ya no se invoca.
+        messages.success(self.request, "Lista de compras eliminada correctamente.")
+        return super().form_valid(form)
 
 
 # ==========================================
@@ -330,7 +335,7 @@ class ShoppingItemCreateView(LoginRequiredMixin, CreateView):
             self.request,
             f"Producto '{item.name}' agregado a la lista. Subtotal: {item.formatted_total_price}"
         )
-        return redirect('shopping:list_detail', pk=shopping_list.pk)
+        return redirect(LIST_DETAIL_URL, pk=shopping_list.pk)
 
     def form_invalid(self, form):
         list_pk = self.kwargs.get('list_pk')
@@ -339,7 +344,7 @@ class ShoppingItemCreateView(LoginRequiredMixin, CreateView):
             for campo, errores in form.errors.items()
         )
         messages.error(self.request, f"No se agregó el producto. {detalle}")
-        return redirect('shopping:list_detail', pk=list_pk)
+        return redirect(LIST_DETAIL_URL, pk=list_pk)
 
 
 class ShoppingItemUpdateView(LoginRequiredMixin, UpdateView):
@@ -354,7 +359,7 @@ class ShoppingItemUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         item = form.save()
         messages.success(self.request, f"Producto '{item.name}' actualizado.")
-        return redirect('shopping:list_detail', pk=item.shopping_list.pk)
+        return redirect(LIST_DETAIL_URL, pk=item.shopping_list.pk)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -369,16 +374,12 @@ class ShoppingItemDeleteView(LoginRequiredMixin, DeleteView):
     def get_queryset(self):
         return ShoppingItem.objects.filter(shopping_list__user=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
-        item = self.get_object()
-        list_pk = item.shopping_list.pk
-        item_name = item.name
-        response = super().delete(request, *args, **kwargs)
-        messages.success(request, f"Producto '{item_name}' eliminado de la lista.")
-        return response
+    def form_valid(self, form):
+        messages.success(self.request, f"Producto '{self.object.name}' eliminado de la lista.")
+        return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('shopping:list_detail', kwargs={'pk': self.object.shopping_list.pk})
+        return reverse(LIST_DETAIL_URL, kwargs={'pk': self.object.shopping_list.pk})
 
 
 class ShoppingItemTogglePurchasedView(LoginRequiredMixin, View):
@@ -397,4 +398,4 @@ class ShoppingItemTogglePurchasedView(LoginRequiredMixin, View):
                 'list_total': str(item.shopping_list.total_amount),
             })
 
-        return redirect('shopping:list_detail', pk=item.shopping_list.pk)
+        return redirect(LIST_DETAIL_URL, pk=item.shopping_list.pk)

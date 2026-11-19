@@ -1,0 +1,23 @@
+# Laboratorio local de la Evaluación 3: el CRUD corre en Docker y ZAP lo analiza en http://127.0.0.1:8000
+services:
+  web:
+    build: .
+    image: supermercado-lab:u3
+    env_file: .env.lab
+    environment:
+      DATABASE_URL: sqlite:////data/db.sqlite3
+    ports:
+      - "127.0.0.1:8000:8000"   # solo la interfaz local del equipo
+    volumes:
+      - lab_data:/data
+    read_only: true             # sistema de archivos de solo lectura, salvo /data y /tmp
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+volumes:
+  lab_data:

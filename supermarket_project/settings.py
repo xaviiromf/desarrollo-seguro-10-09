@@ -8,6 +8,7 @@ según las especificaciones del ciclo de vida y seguridad.
 import os
 from pathlib import Path
 import environ
+from django.utils.csp import CSP
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -96,12 +97,16 @@ NPM_BIN_PATH = env('NPM_BIN_PATH', default=default_npm if os.path.exists(default
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # Sirve los estáticos con DEBUG=False (contenedor Docker) sin depender de runserver.
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.csp.ContentSecurityPolicyMiddleware',
+    'shopping.middleware.PrivateNoStoreMiddleware',
 ]
 
 ROOT_URLCONF = 'supermarket_project.urls'
@@ -183,6 +188,32 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
+
+# Content Security Policy nativa de Django 6: la app solo usa recursos propios (CSS, JS e imágenes),
+# sin código ni estilos en línea. Probada en todas las páginas del recorrido de ZAP.
+SECURE_CSP = {
+    "default-src": [CSP.SELF],
+    "script-src": [CSP.SELF],
+    "style-src": [CSP.SELF],
+    "img-src": [CSP.SELF, "data:"],
+    "font-src": [CSP.SELF],
+    "connect-src": [CSP.SELF],
+    "form-action": [CSP.SELF],
+    "frame-ancestors": [CSP.NONE],
+    "base-uri": [CSP.SELF],
+    "object-src": [CSP.NONE],
+}
+
+# El JavaScript toma el token CSRF del formulario, no de la cookie: puede ser HttpOnly.
+CSRF_COOKIE_HTTPONLY = True
+
+# Los estáticos son públicos, pero no hace falta permitir que cualquier origen los lea por CORS.
+WHITENOISE_ALLOW_ALL_ORIGINS = False
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
