@@ -427,18 +427,20 @@ def s8():
     return f"""
 <h2>8. Fuentes y anexos</h2>
 {tabla(["Fuente oficial", "Enlace", "Consulta"], filas, "xs")}
-<h3>Anexos (en el repositorio, rama <code>evaluacion-u3</code>)</h3>
-{tabla(["Anexo", "Ubicación"], [
-    ["Pull Request", f'<a href="{PR}">{PR}</a>'],
-    ["Reportes completos de ZAP (HTML, JSON, MD, URLs y árbol Sites)", "<code>evaluacion_u3/evidencia/zap/inicial/</code>, <code>.../zap/final/</code> y <code>.../zap/desktop/</code>"],
-    ["SonarQube (métricas e issues en JSON, capturas)", "<code>evaluacion_u3/evidencia/sonarqube/</code> y <code>evaluacion_u2/evidencia/sonarqube/</code>"],
-    ["Pruebas de acceso antes y después", "<code>evaluacion_u3/evidencia/login/</code>"],
-    ["Verificación manual (XSS, alerta 10031)", "<code>evaluacion_u3/evidencia/manual/</code>"],
-    ["Docker (construcción, servicio, versiones)", "<code>evaluacion_u3/evidencia/docker/</code>"],
-    ["Sesiones y cookies", "<code>evaluacion_u3/evidencia/sesiones/</code>"],
-    ["Herramientas reproducibles (recorrido del navegador y control de ZAP)", "<code>evaluacion_u3/herramientas/</code>"],
-    ["Instrucciones del laboratorio", "<code>README.md</code> (sección «Laboratorio con Docker»)"],
-], "small")}"""
+<h3>Anexos (enlaces al repositorio público, rama <code>evaluacion-u3</code>)</h3>
+{tabla(["Anexo", "Enlace"], [[n, f'<a href="{u}">{u.replace(REPO, "")}</a>'] for n, u in [
+    ["Pull Request", PR],
+    ["Reporte ZAP inicial (HTML, JSON, MD, URLs, árbol Sites)", f"{REPO}/tree/evaluacion-u3/evaluacion_u3/evidencia/zap/inicial"],
+    ["Reporte ZAP final", f"{REPO}/tree/evaluacion-u3/evaluacion_u3/evidencia/zap/final"],
+    ["Verificación en ZAP Desktop", f"{REPO}/tree/evaluacion-u3/evaluacion_u3/evidencia/zap/desktop"],
+    ["SonarQube (métricas, issues y capturas)", f"{REPO}/tree/evaluacion-u3/evaluacion_u3/evidencia/sonarqube"],
+    ["Pruebas de acceso antes y después", f"{REPO}/tree/evaluacion-u3/evaluacion_u3/evidencia/login"],
+    ["Verificación manual (XSS, alerta 10031)", f"{REPO}/tree/evaluacion-u3/evaluacion_u3/evidencia/manual"],
+    ["Docker (construcción, servicio, versiones)", f"{REPO}/tree/evaluacion-u3/evaluacion_u3/evidencia/docker"],
+    ["Sesiones y cookies", f"{REPO}/tree/evaluacion-u3/evaluacion_u3/evidencia/sesiones"],
+    ["Herramientas reproducibles (recorrido y control de ZAP)", f"{REPO}/tree/evaluacion-u3/evaluacion_u3/herramientas"],
+    ["Instrucciones del laboratorio (README)", f"{REPO}/blob/evaluacion-u3/README.md"],
+]], "small")}"""
 
 
 CSS = """
